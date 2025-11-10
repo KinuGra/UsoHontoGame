@@ -115,11 +115,11 @@ This document provides a complete, dependency-ordered task list for implementing
 
 ### Presentation Layer
 
-- [ ] T035 [US1] Create createGameAction Server Action with Zod validation in `src/app/actions/game.ts`
-- [ ] T036 [US1] Create useGameForm custom hook with Zod validation in `src/hooks/useGameForm.ts`
-- [ ] T037 [US1] Create GameForm component in `src/components/domain/game/GameForm.tsx`
-- [ ] T038 [US1] Create game creation page in `src/app/games/create/page.tsx`
-- [ ] T039 [US1] Write E2E test for game creation flow in `tests/e2e/game-creation.spec.ts`
+- [X] T035 [US1] Create createGameAction Server Action with Zod validation in `src/app/actions/game.ts`
+- [X] T036 [US1] Create useGameForm custom hook with Zod validation in `src/hooks/useGameForm.ts`
+- [X] T037 [US1] Create GameForm component in `src/components/domain/game/GameForm.tsx`
+- [X] T038 [US1] Create game creation page in `src/app/games/create/page.tsx`
+- [X] T039 [US1] Write E2E test for game creation flow in `tests/e2e/game-creation.spec.ts`
 
 **US1 Completion Criteria**:
 - ✅ Game created with valid player limit (1-100)
