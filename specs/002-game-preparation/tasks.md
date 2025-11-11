@@ -153,7 +153,7 @@ This document provides a complete, dependency-ordered task list for implementing
 
 ### Presentation Layer
 
-- [ ] T049 [US2] Create presenter action Server Actions (addPresenter, removePresenter with Zod validation and NotFoundError handling) in `src/app/actions/presenter.ts`
+- [X] T049 [US2] Create presenter action Server Actions (addPresenter, removePresenter with Zod validation and NotFoundError handling) in `src/app/actions/presenter.ts`
 - [ ] T050 [US2] Create usePresenterForm hook with Zod in `src/hooks/usePresenterForm.ts`
 - [ ] T051 [US2] Create useEpisodeForm hook with Zod in `src/hooks/useEpisodeForm.ts`
 - [ ] T052 [US2] Create PresenterList component in `src/components/domain/game/PresenterList.tsx`
