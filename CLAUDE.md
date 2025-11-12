@@ -65,15 +65,32 @@ src/
 ├── hooks/                        # React custom hooks
 ├── lib/                          # Utility functions
 ├── server/
-│   ├── application/              # Use Cases & DTOs
+│   ├── application/              # Use Cases & DTOs (with co-located tests)
 │   │   ├── dto/
 │   │   └── use-cases/
-│   ├── domain/                   # Domain entities & logic
+│   │       ├── session/
+│   │       │   ├── CreateSession.ts
+│   │       │   ├── CreateSession.test.ts    # Co-located tests
+│   │       │   └── ...
+│   │       └── games/
+│   │           ├── CreateGame.ts
+│   │           ├── CreateGame.test.ts       # Co-located tests
+│   │           └── ...
+│   ├── domain/                   # Domain entities & logic (with co-located tests)
 │   │   ├── entities/
-│   │   ├── errors/
-│   │   ├── repositories/
+│   │   │   ├── Game.ts
+│   │   │   ├── Game.test.ts                # Co-located tests
+│   │   │   └── ...
+│   │   ├── value-objects/
+│   │   │   ├── GameId.ts
+│   │   │   ├── GameId.test.ts              # Co-located tests
+│   │   │   └── ...
 │   │   ├── schemas/
-│   │   └── value-objects/
+│   │   │   ├── gameSchemas.ts
+│   │   │   ├── gameSchemas.test.ts         # Co-located tests
+│   │   │   └── ...
+│   │   ├── errors/
+│   │   └── repositories/
 │   └── infrastructure/           # External interfaces
 │       └── repositories/
 ├── generated/                    # Generated Prisma Client
@@ -82,7 +99,6 @@ src/
 tests/
 ├── e2e/                          # Playwright E2E tests
 ├── integration/                  # Integration tests
-├── unit/                         # Vitest unit tests (non-component tests)
 └── utils/                        # Test utilities (mocks, helpers)
 
 prisma/
@@ -118,8 +134,13 @@ npm run test:e2e:debug     # Debug E2E tests
 ```
 
 **Test Organization**:
-- **Component Tests**: Co-located with components (e.g., `src/components/pages/MyPage/MyPage.test.tsx`)
-- **E2E Tests**: `tests/e2e/` directory
+- **All Unit Tests**: Co-located with their implementation files using `.test.ts` or `.test.tsx` extension
+  - Component tests: `src/components/pages/MyPage/MyPage.test.tsx`
+  - Domain entity tests: `src/server/domain/entities/Game.test.ts`
+  - Value object tests: `src/server/domain/value-objects/GameId.test.ts`
+  - Schema tests: `src/server/domain/schemas/gameSchemas.test.ts`
+  - Use case tests: `src/server/application/use-cases/games/CreateGame.test.ts`
+- **E2E Tests**: `tests/e2e/` directory (Playwright)
 - **Integration Tests**: `tests/integration/` directory
 - **Test Utilities**: `tests/utils/` for shared mocks and helpers
 

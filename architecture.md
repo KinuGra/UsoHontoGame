@@ -1646,10 +1646,11 @@ export type ApiResponse<T> = {
 
 ### Test File Organization
 
-**Co-located Tests**: Unit tests are placed alongside the components they test for improved maintainability and discoverability.
+**Co-located Tests**: ALL unit tests are placed alongside their implementation files for improved maintainability and discoverability.
 
+**Component Tests**:
 ```
-components/pages/
+src/components/pages/
 ├── GameDetailPage/
 │   ├── index.tsx                      # Component implementation
 │   ├── GameDetailPage.types.ts        # Type definitions
@@ -1659,6 +1660,41 @@ components/pages/
     ├── index.tsx
     ├── TopPage.test.tsx               # Co-located test
     └── TopPageNicknameSetup.test.tsx  # Sub-component test
+```
+
+**Domain Tests**:
+```
+src/server/domain/
+├── entities/
+│   ├── Game.ts
+│   ├── Game.test.ts                   # Entity tests (co-located)
+│   ├── Presenter.ts
+│   └── Presenter.test.ts              # Entity tests (co-located)
+├── value-objects/
+│   ├── GameId.ts
+│   ├── GameId.test.ts                 # Value object tests (co-located)
+│   ├── GameStatus.ts
+│   └── GameStatus.test.ts             # Value object tests (co-located)
+└── schemas/
+    ├── gameSchemas.ts
+    ├── gameSchemas.test.ts            # Schema tests (co-located)
+    ├── validators.ts
+    └── validators.test.ts             # Validator tests (co-located)
+```
+
+**Use Case Tests**:
+```
+src/server/application/use-cases/
+├── session/
+│   ├── CreateSession.ts
+│   ├── CreateSession.test.ts          # Use case tests (co-located)
+│   ├── SetNickname.ts
+│   └── SetNickname.test.ts            # Use case tests (co-located)
+└── games/
+    ├── CreateGame.ts
+    ├── CreateGame.test.ts             # Use case tests (co-located)
+    ├── AddPresenter.ts
+    └── AddPresenter.test.ts           # Use case tests (co-located)
 ```
 
 **Test Utilities**: Shared test helpers and mock data factories are centralized:
@@ -1686,10 +1722,16 @@ test('renders button with text', () => {
 ```
 
 **Testing Principles**:
-- Tests are co-located with components (`.test.tsx` files alongside `.tsx` files)
-- Mock external dependencies (domain components, hooks, Next.js components)
-- Use test utilities from `tests/utils/test-helpers.tsx` for mock data
-- Vitest automatically discovers `*.test.tsx` files in `src/` directory
+- **Co-location**: ALL unit tests are co-located with their implementation files
+  - Components: `.test.tsx` files alongside `.tsx` files
+  - TypeScript modules: `.test.ts` files alongside `.ts` files
+- **Mock Dependencies**: Mock external dependencies (components, hooks, repositories)
+- **Test Utilities**: Use shared utilities from `tests/utils/test-helpers.tsx` for mock data
+- **Test Discovery**: Vitest automatically discovers `*.test.ts` and `*.test.tsx` files in `src/` directory
+- **Test Types**:
+  - Component tests: Test React components in isolation
+  - Domain tests: Test entities, value objects, and domain logic
+  - Use case tests: Test application layer business logic with mocked dependencies
 
 ### 2. Integration Testing
 Test user workflows and component interactions.
