@@ -23,7 +23,7 @@ describe("CreateGame", () => {
 			const result = await useCase.execute(input);
 
 			expect(result.id).toBeDefined();
-			expect(result.name).toBe(result.id); // Name starts as UUID
+			expect(result.name).toBeNull(); // Name is null when not provided
 			expect(result.status).toBe("準備中");
 			expect(result.maxPlayers).toBe(10);
 			expect(result.currentPlayers).toBe(0);
@@ -138,20 +138,21 @@ describe("CreateGame", () => {
 			expect(result.currentPlayers).toBe(0);
 		});
 
-		it("should use UUID as initial game name", async () => {
-			const input = {
-				creatorId: "session-123",
-				playerLimit: 10,
-			};
+	it("should create game with custom name when provided", async () => {
+		const input = {
+			creatorId: "session-123",
+			name: "My Custom Game",
+			playerLimit: 10,
+		};
 
-			const result = await useCase.execute(input);
+		const result = await useCase.execute(input);
 
-			// Name should be a valid UUID (same as ID)
-			expect(result.name).toBe(result.id);
-			expect(result.name).toMatch(
-				/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
-			);
-		});
+		// Name should be the provided custom name
+		expect(result.name).toBe("My Custom Game");
+		expect(result.id).toMatch(
+			/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+		);
+	});
 
 		it("should always create games in 準備中 status", async () => {
 			const inputs = [

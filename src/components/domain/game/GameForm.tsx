@@ -60,6 +60,35 @@ export function GameForm({
 					<input type="hidden" name="gameId" value={gameId} />
 				)}
 
+				{/* Game Name Input (optional) */}
+				<div>
+					<label
+						htmlFor="name"
+						className="block text-sm font-medium text-gray-700 mb-2"
+					>
+						ゲーム名 (任意, 最大100文字)
+					</label>
+					<input
+						type="text"
+						id="name"
+						name="name"
+						maxLength={100}
+						placeholder="未入力の場合はゲームIDが表示されます"
+						disabled={isSubmitting || isSuccess}
+						className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+						aria-describedby={errors.name ? "name-error" : undefined}
+						aria-invalid={errors.name ? "true" : "false"}
+					/>
+					<p className="mt-1 text-xs text-gray-500">
+						ゲームを識別しやすい名前を付けることができます
+					</p>
+					{errors.name && (
+						<p id="name-error" className="mt-1 text-sm text-red-600" role="alert">
+							{errors.name[0]}
+						</p>
+					)}
+				</div>
+
 				{/* Player Limit Input */}
 				<div>
 					<label

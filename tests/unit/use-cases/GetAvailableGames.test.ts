@@ -9,6 +9,7 @@ describe('GetAvailableGames', () => {
   const createMockRepository = (): IGameRepository => ({
     findAll: vi.fn(),
     findByStatus: vi.fn(),
+    findByCreatorId: vi.fn(),
     findById: vi.fn(),
     create: vi.fn(),
     update: vi.fn(),

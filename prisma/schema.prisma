@@ -15,7 +15,7 @@ datasource db {
 
 model Game {
   id             String      @id @default(uuid())
-  name           String      // Game display name
+  name           String?     // Game display name (optional, max 100 chars, defaults to UUID display)
   creatorId      String      // Session ID of the moderator
   maxPlayers     Int         // Maximum number of players (1-100)
   currentPlayers Int         @default(0) // Current number of registered players

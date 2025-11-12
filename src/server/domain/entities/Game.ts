@@ -33,7 +33,7 @@ export class InvalidPlayerCountError extends Error {
  */
 export class Game {
   private _id: GameId;
-  private _name: string;
+  private _name: string | null;
   private _status: GameStatus;
   private _maxPlayers: number;
   private _currentPlayers: number;
@@ -44,7 +44,7 @@ export class Game {
   /**
    * Creates a new Game
    * @param id Unique game identifier
-   * @param name Game display name
+   * @param name Game display name (optional, max 100 chars, defaults to UUID for display)
    * @param status Current game status
    * @param maxPlayers Maximum number of players
    * @param currentPlayers Current number of registered players
@@ -54,7 +54,7 @@ export class Game {
    */
   constructor(
     id: GameId,
-    name: string,
+    name: string | null,
     status: GameStatus,
     maxPlayers: number,
     currentPlayers: number,
@@ -81,10 +81,17 @@ export class Game {
   }
 
   /**
-   * Gets the game name
+   * Gets the game name (optional)
    */
-  get name(): string {
+  get name(): string | null {
     return this._name;
+  }
+
+  /**
+   * Gets the display name (returns ID if name is null)
+   */
+  get displayName(): string {
+    return this._name || this._id.toString();
   }
 
   /**
@@ -145,12 +152,18 @@ export class Game {
 
   /**
    * Validates game invariants
-   * @throws EmptyGameNameError if name is empty
+   * @throws EmptyGameNameError if name is provided but empty
    * @throws InvalidPlayerCountError if player counts are invalid
    */
   validate(): void {
-    if (this._name.trim() === '') {
-      throw new EmptyGameNameError();
+    // Validate name if provided (max 100 chars as per spec)
+    if (this._name !== null) {
+      if (this._name.trim() === '') {
+        throw new EmptyGameNameError();
+      }
+      if (this._name.length > 100) {
+        throw new ValidationError('Game name must be 100 characters or less');
+      }
     }
 
     if (this._maxPlayers <= 0) {

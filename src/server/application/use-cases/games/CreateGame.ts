@@ -16,17 +16,17 @@ import { ValidationError } from "@/server/domain/errors/ValidationError";
 
 /**
  * CreateGame Use Case
- * Creates a new game with specified player limit
- * Games are created in 準備中 (preparation) status with UUID as initial name
+ * Creates a new game with specified player limit and optional custom name
+ * Games are created in 準備中 (preparation) status
  */
 export class CreateGame {
 	constructor(private gameRepository: IGameRepository) {}
 
 	/**
 	 * Execute the CreateGame use case
-	 * @param input CreateGame input with creator ID and player limit
+	 * @param input CreateGame input with creator ID, optional name, and player limit
 	 * @returns Created game data
-	 * @throws ValidationError if player limit is invalid
+	 * @throws ValidationError if player limit or name is invalid
 	 */
 	async execute(input: CreateGameInput): Promise<CreateGameOutput> {
 		// Validate player limit (FR-001: 1-100)
@@ -36,15 +36,25 @@ export class CreateGame {
 			);
 		}
 
+		// Validate name if provided (FR-001a: max 100 chars)
+		if (input.name !== undefined && input.name !== null) {
+			if (input.name.trim() === '') {
+				throw new ValidationError('Game name cannot be empty when provided');
+			}
+			if (input.name.length > 100) {
+				throw new ValidationError('Game name must be 100 characters or less');
+			}
+		}
+
 		// Generate new game ID (FR-008: UUID)
 		const gameId = GameId.generate();
 
 		// Create game entity in 準備中 status (FR-002)
-		// Name is initially the UUID (Assumption 4: games can be created without name)
+		// Name is optional - if not provided, UI will display UUID (FR-001b)
 		const now = new Date();
 		const game = new Game(
 			gameId,
-			gameId.value, // Name starts as UUID
+			input.name ?? null, // Use provided name or null for UUID display
 			GameStatus.preparation(), // Always 準備中 for new games
 			input.playerLimit,
 			0, // New games start with 0 players

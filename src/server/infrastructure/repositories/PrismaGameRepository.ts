@@ -30,15 +30,7 @@ export class PrismaGameRepository implements IGameRepository {
 			orderBy: { createdAt: "desc" },
 		});
 
-		return games.map((game: {
-			id: string;
-			name: string;
-			status: string;
-			maxPlayers: number;
-			currentPlayers: number;
-			createdAt: Date;
-			updatedAt: Date;
-		}) => this.toDomain(game));
+		return games.map((game) => this.toDomain(game));
 	}
 
 	/**
@@ -51,15 +43,7 @@ export class PrismaGameRepository implements IGameRepository {
 			orderBy: { createdAt: "desc" },
 		});
 
-		return games.map((game: {
-			id: string;
-			name: string;
-			status: string;
-			maxPlayers: number;
-			currentPlayers: number;
-			createdAt: Date;
-			updatedAt: Date;
-		}) => this.toDomain(game));
+		return games.map((game) => this.toDomain(game));
 	}
 
 	/**
@@ -72,15 +56,7 @@ export class PrismaGameRepository implements IGameRepository {
 			orderBy: { createdAt: "desc" },
 		});
 
-		return games.map((game: {
-			id: string;
-			name: string;
-			status: string;
-			maxPlayers: number;
-			currentPlayers: number;
-			createdAt: Date;
-			updatedAt: Date;
-		}) => this.toDomain(game));
+		return games.map((game) => this.toDomain(game));
 	}
 
 	/**
@@ -218,7 +194,7 @@ export class PrismaGameRepository implements IGameRepository {
 	 */
 	private toDomain(prismaGame: {
 		id: string;
-		name: string;
+		name: string | null;
 		status: string;
 		maxPlayers: number;
 		currentPlayers: number;

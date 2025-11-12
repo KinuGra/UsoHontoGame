@@ -179,7 +179,7 @@ describe("CloseGame Use Case", () => {
 		it("should handle game with very long name", async () => {
 			// Given: Game with long name
 			const gameId = "550e8400-e29b-41d4-a716-446655440007";
-			const longName = "A".repeat(200);
+			const longName = "A".repeat(100);
 			const game = new Game(
 				new GameId(gameId),
 				longName,

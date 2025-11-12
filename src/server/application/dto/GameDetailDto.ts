@@ -10,8 +10,8 @@
 export interface GameDetailDto {
 	/** Game ID (UUID) */
 	id: string;
-	/** Game display name */
-	name: string;
+	/** Game display name (nullable, defaults to UUID display) */
+	name: string | null;
 	/** Game status (準備中 | 出題中 | 締切) */
 	status: string;
 	/** Maximum number of players */

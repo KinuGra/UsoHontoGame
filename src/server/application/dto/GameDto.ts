@@ -9,19 +9,21 @@
 export interface GameDto {
 	/** Game ID (UUID) */
 	id: string;
-	/** Game display name */
-	name: string;
+	/** Game display name (custom name or defaults to ID) */
+	name: string | null;
 	/** Available player slots (calculated: maxPlayers - currentPlayers) */
 	availableSlots: number;
 }
 
 /**
  * CreateGame use case input DTO
- * Contract for creating a new game (FR-001, FR-002, FR-008)
+ * Contract for creating a new game (FR-001, FR-001a, FR-002, FR-008)
  */
 export interface CreateGameInput {
 	/** Session ID of the moderator creating the game */
 	creatorId: string;
+	/** Optional custom game name (max 100 chars, defaults to UUID display) */
+	name?: string | null;
 	/** Maximum number of players allowed (1-100) */
 	playerLimit: number;
 }
@@ -33,8 +35,8 @@ export interface CreateGameInput {
 export interface CreateGameOutput {
 	/** Created game ID */
 	id: string;
-	/** Game name (initially UUID) */
-	name: string;
+	/** Game name (optional custom name or null for UUID display) */
+	name: string | null;
 	/** Game status (always '準備中' for new games) */
 	status: string;
 	/** Maximum players */

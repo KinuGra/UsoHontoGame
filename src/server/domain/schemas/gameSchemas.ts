@@ -16,6 +16,11 @@ export const GameStatusSchema = z.enum(["準備中", "出題中", "締切"], {
 
 // Input Schemas (Server Actions & Forms)
 export const CreateGameSchema = z.object({
+	name: z
+		.string()
+		.max(100, { message: "ゲーム名は100文字以下でなければなりません" })
+		.nullable()
+		.optional(),
 	playerLimit: z
 		.number()
 		.int({ message: "プレイヤー数は整数でなければなりません" })

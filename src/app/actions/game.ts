@@ -33,7 +33,9 @@ export async function createGameAction(
 > {
 	try {
 		// Extract and parse form data
+		const gameName = formData.get("name");
 		const rawData = {
+			name: gameName === "" ? null : gameName?.toString() ?? null,
 			playerLimit: Number(formData.get("playerLimit")),
 		};
 
@@ -65,6 +67,7 @@ export async function createGameAction(
 
 		const game = await useCase.execute({
 			creatorId: sessionId,
+			name: validationResult.data.name,
 			playerLimit: validationResult.data.playerLimit,
 		});
 
