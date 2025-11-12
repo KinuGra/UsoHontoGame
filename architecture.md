@@ -96,6 +96,287 @@ export function TopPage(props: TopPageProps) {
 }
 ```
 
+#### App Router Page Separation Pattern
+
+**RULE: App Router pages (`src/app/**/page.tsx`) must be thin wrappers (10-30 lines) that delegate to page components in `src/components/pages/`.**
+
+This pattern ensures clear separation between routing concerns and presentation logic, improving maintainability, testability, and reusability.
+
+##### Pattern for Client Components
+
+**Structure:**
+```
+src/
+├── app/
+│   └── games/[id]/presenters/
+│       └── page.tsx              # Thin wrapper (22 lines)
+└── components/
+    └── pages/
+        └── PresenterManagementPage/
+            ├── index.tsx          # Pure presentational component
+            ├── PresenterManagementPage.types.ts
+            └── hooks/
+                └── usePresenterManagementPage.ts  # All business logic
+```
+
+**App Router Page (Thin Wrapper):**
+```tsx
+// src/app/games/[id]/presenters/page.tsx
+"use client";
+
+import { use } from "react";
+import { PresenterManagementPage } from "@/components/pages/PresenterManagementPage";
+
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default function Page({ params }: PageProps) {
+  const { id: gameId } = use(params);
+  return <PresenterManagementPage gameId={gameId} />;
+}
+```
+
+**Page Component (Pure Presentational):**
+```tsx
+// src/components/pages/PresenterManagementPage/index.tsx
+"use client";
+
+import { usePresenterManagementPage } from "./hooks/usePresenterManagementPage";
+import type { PresenterManagementPageProps } from "./PresenterManagementPage.types";
+
+export function PresenterManagementPage({ gameId }: PresenterManagementPageProps) {
+  const {
+    presenters,
+    selectedPresenter,
+    isLoading,
+    error,
+    handlePresenterAdded,
+    handlePresenterRemoved,
+    handleEpisodeAdded,
+    handlePresenterSelected,
+  } = usePresenterManagementPage({ gameId });
+
+  if (isLoading) {
+    return <LoadingState />;
+  }
+
+  return (
+    <main className="min-h-screen bg-gray-50 py-8">
+      {/* Pure UI - no business logic */}
+      <PresenterForm
+        gameId={gameId}
+        onPresenterAdded={handlePresenterAdded}
+      />
+      <PresenterList
+        presenters={presenters}
+        onPresenterSelected={handlePresenterSelected}
+      />
+    </main>
+  );
+}
+```
+
+**Custom Hook (All Business Logic):**
+```tsx
+// src/components/pages/PresenterManagementPage/hooks/usePresenterManagementPage.ts
+import { useState, useEffect } from "react";
+import type { UsePresenterManagementPageReturn } from "../PresenterManagementPage.types";
+
+export function usePresenterManagementPage({
+  gameId
+}: PresenterManagementPageProps): UsePresenterManagementPageReturn {
+  const [presenters, setPresenters] = useState<PresenterWithLieDto[]>([]);
+  const [selectedPresenterId, setSelectedPresenterId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadPresenters = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await getPresentersByGameAction(gameId);
+      if (result.success) {
+        setPresenters(result.presenters);
+      } else {
+        setError(result.errors._form?.[0] || "エラーが発生しました");
+      }
+    } catch (e) {
+      setError("データの読み込みに失敗しました");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadPresenters();
+  }, [gameId]);
+
+  const handlePresenterAdded = (presenter: PresenterWithLieDto) => {
+    setPresenters((prev) => [...prev, presenter]);
+  };
+
+  // ... other handlers
+
+  return {
+    presenters,
+    selectedPresenter: presenters.find(p => p.id === selectedPresenterId),
+    isLoading,
+    error,
+    handlePresenterAdded,
+    handlePresenterRemoved,
+    handleEpisodeAdded,
+    handlePresenterSelected,
+  };
+}
+```
+
+**Result:** 213-line App Router page → 22-line wrapper + clean separation of concerns
+
+##### Pattern for Server Components
+
+**Structure:**
+```
+src/
+├── app/
+│   └── games/[id]/
+│       └── page.tsx              # Thin wrapper with data fetching (44 lines)
+└── components/
+    └── pages/
+        └── GameDetailPage/
+            ├── index.tsx          # Pure presentational components
+            └── GameDetailPage.types.ts
+```
+
+**App Router Page (Data Fetching + Delegation):**
+```tsx
+// src/app/games/[id]/page.tsx
+import { redirect } from "next/navigation";
+import { getCookie } from "@/lib/cookies";
+import { COOKIE_NAMES } from "@/lib/constants";
+import { getGameDetailAction } from "@/app/actions/game";
+import {
+  GameDetailPage,
+  GameDetailPageError,
+} from "@/components/pages/GameDetailPage";
+
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function Page({ params }: PageProps) {
+  // 1. Auth check
+  const sessionId = await getCookie(COOKIE_NAMES.SESSION_ID);
+  if (!sessionId) {
+    redirect("/");
+  }
+
+  // 2. Get route params
+  const { id: gameId } = await params;
+
+  // 3. Fetch data
+  const result = await getGameDetailAction(gameId);
+
+  // 4. Handle errors
+  if (!result.success) {
+    const errorMessage = result.errors._form?.[0] || "ゲームの読み込みに失敗しました";
+    return <GameDetailPageError errorMessage={errorMessage} />;
+  }
+
+  // 5. Delegate to page component
+  return <GameDetailPage game={result.game} />;
+}
+```
+
+**Page Components (Pure UI):**
+```tsx
+// src/components/pages/GameDetailPage/index.tsx
+import { GameForm } from "@/components/domain/game/GameForm";
+import { DeleteGameButton } from "@/components/domain/game/DeleteGameButton";
+import type { GameDetailPageProps, GameDetailPageErrorProps } from "./GameDetailPage.types";
+
+export function GameDetailPage({ game }: GameDetailPageProps) {
+  const canEdit = game.status === "準備中";
+
+  return (
+    <div className="container mx-auto max-w-2xl px-4 py-8">
+      <h1 className="text-3xl font-bold text-gray-900">ゲーム詳細</h1>
+
+      {/* Game info display */}
+      <div className="mb-6 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <dl className="space-y-4">
+          <div>
+            <dt className="text-sm font-medium text-gray-500">ゲーム名</dt>
+            <dd className="mt-1 text-base text-gray-900">{game.name}</dd>
+          </div>
+          <div>
+            <dt className="text-sm font-medium text-gray-500">ステータス</dt>
+            <dd className="mt-1 text-base text-gray-900">{game.status}</dd>
+          </div>
+          {/* ... more fields ... */}
+        </dl>
+      </div>
+
+      {/* Edit form (only when editable) */}
+      {canEdit && (
+        <GameForm
+          mode="edit"
+          gameId={game.id}
+          initialPlayerLimit={game.maxPlayers}
+          currentPlayers={game.currentPlayers}
+        />
+      )}
+
+      {/* Delete button */}
+      <DeleteGameButton gameId={game.id} gameStatus={game.status} />
+    </div>
+  );
+}
+
+export function GameDetailPageError({ errorMessage }: GameDetailPageErrorProps) {
+  return (
+    <div className="container mx-auto max-w-2xl px-4 py-8">
+      <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+        <h2 className="text-lg font-semibold text-red-900">
+          エラーが発生しました
+        </h2>
+        <p className="mt-2 text-sm text-red-800">{errorMessage}</p>
+        <a href="/games" className="mt-4 inline-block text-sm font-medium text-red-900 underline">
+          ゲーム一覧に戻る
+        </a>
+      </div>
+    </div>
+  );
+}
+```
+
+**Result:** 150-line App Router page → 44-line wrapper + clean error handling
+
+##### App Router Page Responsibilities
+
+**App Router pages should ONLY handle:**
+1. **Route parameter extraction** - Get params from Next.js router
+2. **Authentication/authorization checks** - Verify session, redirect if needed
+3. **Data fetching** (Server Components only) - Fetch initial data server-side
+4. **Error state routing** - Decide which component to render (success/error)
+5. **Component delegation** - Pass data to page component
+
+**App Router pages should NEVER contain:**
+- ❌ UI rendering (beyond error states)
+- ❌ Business logic
+- ❌ State management
+- ❌ Event handlers
+- ❌ Form logic
+
+##### Benefits of This Pattern
+
+1. **Separation of Concerns**: Routing logic separate from presentation
+2. **Improved Testability**: Page components testable without Next.js routing
+3. **Better Reusability**: Page components can be used outside App Router context
+4. **Easier Maintenance**: Changes to UI don't affect routing structure
+5. **Clearer Architecture**: Consistent 10-30 line wrappers make codebase navigable
+6. **Type Safety**: Clear interfaces between router and components
+
 #### Pages vs Domain vs UI Component Hierarchy
 
 | Layer | Purpose | Examples |

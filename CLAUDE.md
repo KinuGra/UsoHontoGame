@@ -131,6 +131,72 @@ npm run check              # Lint and format with Biome
 - Zod schemas for runtime validation at API boundaries
 - Repository pattern for data access
 
+## Component Separation Pattern
+
+**App Router Pages** (`src/app/`)：
+- **Thin wrappers** (10-30 lines)
+- Responsibilities:
+  - Extract route params
+  - Data fetching (Server Components only)
+  - Session/auth checks
+  - Delegate to page components
+- Example:
+  ```typescript
+  export default async function Page({ params }: PageProps) {
+    const { id } = await params;
+    const data = await fetchData(id);
+    return <MyPageComponent data={data} />;
+  }
+  ```
+
+**Page Components** (`src/components/pages/`):
+- **Pure presentational** components
+- Structure:
+  ```
+  src/components/pages/MyPage/
+  ├── index.tsx                    # Presentational component
+  ├── MyPage.types.ts              # Type definitions
+  └── hooks/                       # Custom hooks (Client Components only)
+      └── useMyPage.ts
+  ```
+- Responsibilities:
+  - Layout and UI composition
+  - Domain/UI component orchestration
+  - Call custom hooks for business logic
+  - No direct data fetching or state logic
+
+**Custom Hooks** (`components/pages/*/hooks/`):
+- **Business logic encapsulation**
+- For Client Components only
+- Located within component directory
+- Responsibilities:
+  - State management
+  - Data fetching/mutations
+  - Event handlers
+  - Side effects
+
+**Pattern Examples**:
+
+1. **Client Component** (213 → 22 lines):
+   - Before: `/app/games/[id]/presenters/page.tsx` (logic + UI mixed)
+   - After:
+     - `/app/games/[id]/presenters/page.tsx` (22 lines - wrapper)
+     - `/components/pages/PresenterManagementPage/index.tsx` (UI)
+     - `/components/pages/PresenterManagementPage/hooks/usePresenterManagementPage.ts` (logic)
+
+2. **Server Component** (150 → 44 lines):
+   - Before: `/app/games/[id]/page.tsx` (data fetch + UI mixed)
+   - After:
+     - `/app/games/[id]/page.tsx` (44 lines - data fetch + wrapper)
+     - `/components/pages/GameDetailPage/index.tsx` (UI only)
+
+**Benefits**:
+- ✅ Clear separation of concerns
+- ✅ Improved testability
+- ✅ Better reusability
+- ✅ Easier maintenance
+- ✅ Follows architecture.md patterns
+
 ## Database
 
 **Connection**:
