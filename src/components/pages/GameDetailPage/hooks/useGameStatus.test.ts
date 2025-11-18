@@ -10,7 +10,9 @@ vi.mock('@/app/actions/game', () => ({
 }));
 
 // Get references to the mocked functions
-const { startGameAction: mockStartGameAction, closeGameAction: mockCloseGameAction } = await import('@/app/actions/game');
+const { startGameAction: mockStartGameAction, closeGameAction: mockCloseGameAction } = await import(
+  '@/app/actions/game'
+);
 
 describe('useGameStatus', () => {
   beforeEach(() => {

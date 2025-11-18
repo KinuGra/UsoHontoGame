@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { AccessibilityProvider } from '@/components/ui/AccessibilityProvider';
 import type { GameStatusValue } from '@/server/domain/value-objects/GameStatus';
 import { StatusTransitionButton } from './StatusTransitionButton';
 
@@ -9,12 +10,39 @@ vi.mock('@/app/actions/game', () => ({
   closeGameAction: vi.fn(),
 }));
 
+// Mock hooks
+vi.mock('@/hooks/useToast', () => ({
+  useToast: () => ({
+    showSuccess: vi.fn(),
+    showError: vi.fn(),
+  }),
+  statusTransitionToasts: {
+    gameStarted: () => ({ message: 'ゲームが正常に開始されました', title: 'ゲーム開始' }),
+    gameClosed: () => ({ message: 'ゲームが正常に締切されました', title: 'ゲーム締切' }),
+  },
+}));
+
+// Mock animations
+vi.mock('@/lib/animations', () => ({
+  animationSequences: {
+    buttonSuccess: vi.fn().mockResolvedValue(undefined),
+    buttonError: vi.fn().mockResolvedValue(undefined),
+  },
+}));
+
 // Mock alert function
 const mockAlert = vi.fn();
 global.alert = mockAlert;
 
 // Get references to the mocked functions
-const { startGameAction: mockStartGameAction, closeGameAction: mockCloseGameAction } = await import('@/app/actions/game');
+const { startGameAction: mockStartGameAction, closeGameAction: mockCloseGameAction } = await import(
+  '@/app/actions/game'
+);
+
+// Test wrapper with providers
+const TestWrapper = ({ children }: { children: React.ReactNode }) => (
+  <AccessibilityProvider>{children}</AccessibilityProvider>
+);
 
 describe('StatusTransitionButton', () => {
   const defaultProps = {
@@ -33,7 +61,11 @@ describe('StatusTransitionButton', () => {
 
   describe('準備中 status', () => {
     it('should render "ゲームを開始" button for preparation status', () => {
-      render(<StatusTransitionButton {...defaultProps} />);
+      render(
+        <TestWrapper>
+          <StatusTransitionButton {...defaultProps} />
+        </TestWrapper>
+      );
 
       expect(screen.getByRole('button', { name: /ゲームを開始/i })).toBeInTheDocument();
     });
@@ -41,10 +73,14 @@ describe('StatusTransitionButton', () => {
     it('should call startGameAction when start button is clicked', async () => {
       vi.mocked(mockStartGameAction).mockResolvedValue({ success: true });
 
-      render(<StatusTransitionButton {...defaultProps} />);
+      render(
+        <TestWrapper>
+          <StatusTransitionButton {...defaultProps} />
+        </TestWrapper>
+      );
 
       const startButton = screen.getByRole('button', { name: /ゲームを開始/i });
-      
+
       await act(async () => {
         fireEvent.click(startButton);
       });
@@ -57,7 +93,11 @@ describe('StatusTransitionButton', () => {
     it('should show loading state when action is in progress', async () => {
       vi.mocked(mockStartGameAction).mockReturnValue(new Promise(() => {})); // Never resolves
 
-      render(<StatusTransitionButton {...defaultProps} />);
+      render(
+        <TestWrapper>
+          <StatusTransitionButton {...defaultProps} />
+        </TestWrapper>
+      );
 
       const startButton = screen.getByRole('button', { name: /ゲームを開始/i });
       fireEvent.click(startButton);
@@ -71,7 +111,11 @@ describe('StatusTransitionButton', () => {
       vi.mocked(mockStartGameAction).mockResolvedValue({ success: true });
       const onSuccess = vi.fn();
 
-      render(<StatusTransitionButton {...defaultProps} onSuccess={onSuccess} />);
+      render(
+        <TestWrapper>
+          <StatusTransitionButton {...defaultProps} onSuccess={onSuccess} />
+        </TestWrapper>
+      );
 
       const startButton = screen.getByRole('button', { name: /ゲームを開始/i });
       fireEvent.click(startButton);
@@ -81,21 +125,24 @@ describe('StatusTransitionButton', () => {
       });
     });
 
-    it('should call onError and show alert when start action fails', async () => {
+    it('should call onError when start action fails', async () => {
       vi.mocked(mockStartGameAction).mockResolvedValue({
         success: false,
         errors: { _form: ['ゲームを開始するには出題者が必要です'] },
       });
       const onError = vi.fn();
 
-      render(<StatusTransitionButton {...defaultProps} onError={onError} />);
+      render(
+        <TestWrapper>
+          <StatusTransitionButton {...defaultProps} onError={onError} />
+        </TestWrapper>
+      );
 
       const startButton = screen.getByRole('button', { name: /ゲームを開始/i });
       fireEvent.click(startButton);
 
       await waitFor(() => {
         expect(onError).toHaveBeenCalledWith('ゲームを開始するには出題者が必要です');
-        expect(mockAlert).toHaveBeenCalledWith('ゲームを開始するには出題者が必要です');
       });
     });
   });
@@ -107,7 +154,11 @@ describe('StatusTransitionButton', () => {
     };
 
     it('should render "ゲームを締切" button for accepting responses status', () => {
-      render(<StatusTransitionButton {...acceptingProps} />);
+      render(
+        <TestWrapper>
+          <StatusTransitionButton {...acceptingProps} />
+        </TestWrapper>
+      );
 
       expect(screen.getByRole('button', { name: /ゲームを締切/i })).toBeInTheDocument();
     });
@@ -117,10 +168,14 @@ describe('StatusTransitionButton', () => {
       const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
       vi.mocked(mockCloseGameAction).mockResolvedValue({ success: true });
 
-      render(<StatusTransitionButton {...acceptingProps} />);
+      render(
+        <TestWrapper>
+          <StatusTransitionButton {...acceptingProps} />
+        </TestWrapper>
+      );
 
       const closeButton = screen.getByRole('button', { name: /ゲームを締切/i });
-      
+
       await act(async () => {
         fireEvent.click(closeButton);
       });
@@ -133,7 +188,11 @@ describe('StatusTransitionButton', () => {
     it('should not call closeGameAction when confirmation is cancelled', async () => {
       const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
 
-      render(<StatusTransitionButton {...acceptingProps} />);
+      render(
+        <TestWrapper>
+          <StatusTransitionButton {...acceptingProps} />
+        </TestWrapper>
+      );
 
       const closeButton = screen.getByRole('button', { name: /ゲームを締切/i });
       fireEvent.click(closeButton);
@@ -149,7 +208,11 @@ describe('StatusTransitionButton', () => {
       const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
       vi.mocked(mockCloseGameAction).mockResolvedValue({ success: true });
 
-      render(<StatusTransitionButton {...acceptingProps} />);
+      render(
+        <TestWrapper>
+          <StatusTransitionButton {...acceptingProps} />
+        </TestWrapper>
+      );
 
       const closeButton = screen.getByRole('button', { name: /ゲームを締切/i });
       fireEvent.click(closeButton);
@@ -207,7 +270,11 @@ describe('StatusTransitionButton', () => {
     };
 
     it('should not render any button for closed status', () => {
-      render(<StatusTransitionButton {...closedProps} />);
+      render(
+        <TestWrapper>
+          <StatusTransitionButton {...closedProps} />
+        </TestWrapper>
+      );
 
       expect(screen.queryByRole('button')).not.toBeInTheDocument();
     });
@@ -215,7 +282,11 @@ describe('StatusTransitionButton', () => {
 
   describe('Accessibility', () => {
     it('should have proper ARIA attributes for start button', () => {
-      render(<StatusTransitionButton {...defaultProps} />);
+      render(
+        <TestWrapper>
+          <StatusTransitionButton {...defaultProps} />
+        </TestWrapper>
+      );
 
       const button = screen.getByRole('button', { name: /ゲームを開始/i });
       expect(button).toHaveAttribute('aria-label');
@@ -225,7 +296,11 @@ describe('StatusTransitionButton', () => {
     it('should have proper ARIA attributes when disabled', async () => {
       vi.mocked(mockStartGameAction).mockReturnValue(new Promise(() => {})); // Never resolves
 
-      render(<StatusTransitionButton {...defaultProps} />);
+      render(
+        <TestWrapper>
+          <StatusTransitionButton {...defaultProps} />
+        </TestWrapper>
+      );
 
       const button = screen.getByRole('button', { name: /ゲームを開始/i });
       fireEvent.click(button);
