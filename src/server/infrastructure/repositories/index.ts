@@ -1,10 +1,14 @@
 // Repository Factory with Dependency Injection
-// Feature: 002-game-preparation
-// Provides game repository instances using Prisma
+// Feature: 002-game-preparation, 001-lie-detection-answers
+// Provides repository instances using Prisma
 
 import type { IGameRepository } from '@/server/domain/repositories/IGameRepository';
+import type { IAnswerRepository } from '@/server/domain/repositories/IAnswerRepository';
+import type { IParticipationRepository } from '@/server/domain/repositories/IParticipationRepository';
 import { PrismaClient } from '../../../generated/prisma/client';
 import { PrismaGameRepository } from './PrismaGameRepository';
+import { PrismaAnswerRepository } from './PrismaAnswerRepository';
+import { PrismaParticipationRepository } from './PrismaParticipationRepository';
 
 /**
  * Singleton Prisma client instance
@@ -30,6 +34,22 @@ export function createGameRepository(): IGameRepository {
 }
 
 /**
+ * Creates answer repository instance
+ * @returns IAnswerRepository implementation using Prisma
+ */
+export function createAnswerRepository(): IAnswerRepository {
+  return new PrismaAnswerRepository(getPrismaClient());
+}
+
+/**
+ * Creates participation repository instance
+ * @returns IParticipationRepository implementation using Prisma
+ */
+export function createParticipationRepository(): IParticipationRepository {
+  return new PrismaParticipationRepository(getPrismaClient());
+}
+
+/**
  * Closes database connections (for testing and shutdown)
  */
 export async function closeRepositoryConnections(): Promise<void> {
@@ -39,5 +59,7 @@ export async function closeRepositoryConnections(): Promise<void> {
   }
 }
 
-// Export repository implementation
+// Export repository implementations
 export { PrismaGameRepository } from './PrismaGameRepository';
+export { PrismaAnswerRepository } from './PrismaAnswerRepository';
+export { PrismaParticipationRepository } from './PrismaParticipationRepository';
