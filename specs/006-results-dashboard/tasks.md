@@ -57,15 +57,15 @@
 
 ### Implementation for User Story 1
 
-- [ ] T011 [US1] Implement GetResponseStatus use case in src/server/application/use-cases/results/GetResponseStatus.ts (makes T007 pass)
-- [ ] T012 [US1] Implement API route handler in src/app/api/games/[gameId]/dashboard/route.ts (makes T008 pass)
-- [ ] T013 [P] [US1] Create ResponseStatusPage types in src/components/pages/ResponseStatusPage/ResponseStatusPage.types.ts
-- [ ] T014 [P] [US1] Create ResponseStatusList domain component in src/components/domain/results/ResponseStatusList.tsx
-- [ ] T015 [US1] Implement useResponseStatus hook with polling logic in src/components/pages/ResponseStatusPage/hooks/useResponseStatus.ts (makes T010 pass)
-- [ ] T016 [US1] Implement ResponseStatusPage component in src/components/pages/ResponseStatusPage/index.tsx (makes T009 pass)
-- [ ] T017 [US1] Create App Router page wrapper in src/app/games/[id]/dashboard/page.tsx
-- [ ] T018 [US1] Format code with Biome: npx biome format --write .
-- [ ] T019 [US1] Run all tests to verify User Story 1: npm test
+- [X] T011 [US1] Implement GetResponseStatus use case in src/server/application/use-cases/results/GetResponseStatus.ts (makes T007 pass)
+- [X] T012 [US1] Implement API route handler in src/app/api/games/[gameId]/dashboard/route.ts (makes T008 pass)
+- [X] T013 [P] [US1] Create ResponseStatusPage types in src/components/pages/ResponseStatusPage/ResponseStatusPage.types.ts
+- [X] T014 [P] [US1] Create ResponseStatusList domain component in src/components/domain/results/ResponseStatusList.tsx
+- [X] T015 [US1] Implement useResponseStatus hook with polling logic in src/components/pages/ResponseStatusPage/hooks/useResponseStatus.ts (makes T010 pass)
+- [X] T016 [US1] Implement ResponseStatusPage component in src/components/pages/ResponseStatusPage/index.tsx (makes T009 pass)
+- [X] T017 [US1] Create App Router page wrapper in src/app/games/[id]/dashboard/page.tsx
+- [X] T018 [US1] Format code with Biome: npx biome format --write .
+- [X] T019 [US1] Run all tests to verify User Story 1: npm test
 - [ ] T020 [US1] Manual testing: Create game, navigate to dashboard, verify polling works
 - [ ] T021 [US1] Commit User Story 1: git add . && git commit -m "feat(US1): implement response status tracking dashboard"
 
