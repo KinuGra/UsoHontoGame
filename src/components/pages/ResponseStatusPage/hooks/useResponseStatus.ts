@@ -13,7 +13,7 @@ import type { ResponseStatusError } from '../ResponseStatusPage.types';
 export interface UseResponseStatusOptions {
   gameId: string;
   initialData?: ResponseStatusDto;
-  pollingInterval?: number; // milliseconds, default 3000 (3s)
+  pollingInterval?: number; // milliseconds, default 5000 (5s)
   enabled?: boolean; // Allow pausing polling
   onUpdate?: (data: ResponseStatusDto) => void;
   onError?: (error: ResponseStatusError) => void;
@@ -35,7 +35,7 @@ export interface UseResponseStatusReturn {
 export function useResponseStatus({
   gameId,
   initialData,
-  pollingInterval = 3000,
+  pollingInterval = 5000,
   enabled = true,
   onUpdate,
   onError,

@@ -24,7 +24,7 @@ export function ResponseStatusPage({ gameId, initialData }: ResponseStatusPagePr
   const { data, error, isLoading, isPolling, refetch } = useResponseStatus({
     gameId,
     initialData,
-    pollingInterval: 3000, // Poll every 3 seconds
+    pollingInterval: 5000, // Poll every 5 seconds
     enabled: true,
     onError: (err) => {
       showError(err.message, '回答状況の取得エラー');
