@@ -1,5 +1,6 @@
 // Response Status Page Component
 // Feature: 006-results-dashboard, User Story 1
+// Feature: 007-game-closure, User Story 3 (added closed game indicator)
 // Real-time response submission tracking for moderators
 
 'use client';
@@ -81,8 +82,43 @@ export function ResponseStatusPage({ gameId, initialData }: ResponseStatusPagePr
                   最終更新: {new Date(data.lastUpdated).toLocaleString('ja-JP')}
                 </p>
               </div>
-              <div className="rounded-lg bg-blue-100 px-3 py-1">
-                <span className="text-sm font-semibold text-blue-800">{data.gameStatus}</span>
+              <div
+                className={`rounded-lg px-3 py-1 ${data.gameStatus === '締切' ? 'bg-red-100' : 'bg-blue-100'}`}
+              >
+                <span
+                  className={`text-sm font-semibold ${data.gameStatus === '締切' ? 'text-red-800' : 'text-blue-800'}`}
+                >
+                  {data.gameStatus}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Game Closed Indicator */}
+        {data && data.gameStatus === '締切' && (
+          <div className="mb-6 rounded-lg border border-orange-200 bg-orange-50 p-6">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0">
+                <svg
+                  className="h-6 w-6 text-orange-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-orange-900">ゲーム終了</h3>
+                <p className="mt-1 text-sm text-orange-700">
+                  このゲームは締め切られました。以下は最終的な回答状況です。
+                </p>
               </div>
             </div>
           </div>
@@ -117,7 +153,7 @@ export function ResponseStatusPage({ gameId, initialData }: ResponseStatusPagePr
                 )}
                 {error.statusCode === 400 && (
                   <p className="mt-2 text-sm text-red-600">
-                    ダッシュボードは出題中のゲームでのみ利用できます。
+                    ダッシュボードは出題中または締切のゲームでのみ利用できます。
                   </p>
                 )}
               </div>
