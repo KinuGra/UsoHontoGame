@@ -353,6 +353,7 @@ export class PrismaGameRepository implements IGameRepository {
   /**
    * Find active games with pagination and player count
    * Feature: 005-top-active-games
+   * Feature: 007-game-closure - Updated to include both '出題中' and '締切' games
    * Note: Uses actual participation count from database for accuracy
    */
   async findActiveGamesWithPagination(params: { limit: number; skip: number }): Promise<{
@@ -363,12 +364,14 @@ export class PrismaGameRepository implements IGameRepository {
       playerCount: number;
       playerLimit: number | null;
       creatorId: string;
+      status: '出題中' | '締切';
     }>;
     total: number;
   }> {
     // Fetch games with actual participation count
+    // Include both '出題中' and '締切' games for TOP page display
     const games = await this.prisma.game.findMany({
-      where: { status: '出題中' },
+      where: { status: { in: ['出題中', '締切'] } },
       orderBy: { createdAt: 'desc' },
       take: params.limit,
       skip: params.skip,
@@ -381,7 +384,7 @@ export class PrismaGameRepository implements IGameRepository {
 
     // Get total count
     const total = await this.prisma.game.count({
-      where: { status: '出題中' },
+      where: { status: { in: ['出題中', '締切'] } },
     });
 
     // Map to expected format
@@ -393,6 +396,66 @@ export class PrismaGameRepository implements IGameRepository {
         playerCount: game._count.participations, // Use actual participation count
         playerLimit: game.maxPlayers,
         creatorId: game.creatorId,
+        status: game.status as '出題中' | '締切',
+      })),
+      total,
+    };
+  }
+
+  /**
+   * Find games with status filter (active and/or closed)
+   * Feature: 007-game-closure
+   */
+  async findGamesWithStatusFilter(params: {
+    limit: number;
+    skip: number;
+    statusFilter: '出題中' | '締切' | 'すべて';
+  }): Promise<{
+    games: Array<{
+      id: string;
+      title: string;
+      createdAt: Date;
+      playerCount: number;
+      playerLimit: number | null;
+      creatorId: string;
+      status: '出題中' | '締切';
+    }>;
+    total: number;
+  }> {
+    // Determine status condition based on filter
+    const statusCondition =
+      params.statusFilter === 'すべて'
+        ? { status: { in: ['出題中', '締切'] } }
+        : { status: params.statusFilter };
+
+    // Fetch games with actual participation count
+    const games = await this.prisma.game.findMany({
+      where: statusCondition,
+      orderBy: { createdAt: 'desc' },
+      take: params.limit,
+      skip: params.skip,
+      include: {
+        _count: {
+          select: { participations: true },
+        },
+      },
+    });
+
+    // Get total count
+    const total = await this.prisma.game.count({
+      where: statusCondition,
+    });
+
+    // Map to expected format
+    return {
+      games: games.map((game) => ({
+        id: game.id,
+        title: game.name || 'Untitled Game',
+        createdAt: game.createdAt,
+        playerCount: game._count.participations,
+        playerLimit: game.maxPlayers,
+        creatorId: game.creatorId,
+        status: game.status as '出題中' | '締切',
       })),
       total,
     };

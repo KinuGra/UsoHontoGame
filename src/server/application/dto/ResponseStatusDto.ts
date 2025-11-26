@@ -1,5 +1,6 @@
 // DTO for response status tracking (User Story 1)
 // Feature: 006-results-dashboard
+// Feature: 007-game-closure (User Story 3 - added shouldContinuePolling)
 
 export interface ResponseStatusDto {
   gameId: string;
@@ -9,6 +10,7 @@ export interface ResponseStatusDto {
   totalParticipants: number;
   submittedCount: number;
   allSubmitted: boolean;
+  shouldContinuePolling: boolean; // false when game is closed (締切)
   lastUpdated: Date;
 }
 

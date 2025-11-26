@@ -1,13 +1,14 @@
 // Use Case: Get Response Status
 // Feature: 006-results-dashboard, User Story 1
+// Feature: 007-game-closure, User Story 3 (added closed game support)
 // Returns real-time response submission status for moderators
 
-import type { IGameRepository } from '@/server/domain/repositories/IGameRepository';
-import type { IAnswerRepository } from '@/server/domain/repositories/IAnswerRepository';
 import type {
-  ResponseStatusDto,
   ParticipantStatusDto,
+  ResponseStatusDto,
 } from '@/server/application/dto/ResponseStatusDto';
+import type { IAnswerRepository } from '@/server/domain/repositories/IAnswerRepository';
+import type { IGameRepository } from '@/server/domain/repositories/IGameRepository';
 import { GameId } from '@/server/domain/value-objects/GameId';
 
 type Result<T> = { success: true; data: T } | { success: false; errors: Record<string, string[]> };
@@ -28,8 +29,9 @@ export class GetResponseStatus {
       };
     }
 
-    // Validate game status
-    if (game.status.toString() !== '出題中') {
+    // Validate game status - allow both 出題中 and 締切 for dashboard viewing
+    const gameStatus = game.status.toString();
+    if (gameStatus !== '出題中' && gameStatus !== '締切') {
       return {
         success: false,
         errors: {
@@ -55,6 +57,9 @@ export class GetResponseStatus {
     const submittedCount = answers.length;
     const allSubmitted = submittedCount === totalParticipants;
 
+    // Determine if polling should continue - stop when game is closed
+    const shouldContinuePolling = gameStatus === '出題中';
+
     return {
       success: true,
       data: {
@@ -65,6 +70,7 @@ export class GetResponseStatus {
         totalParticipants,
         submittedCount,
         allSubmitted,
+        shouldContinuePolling,
         lastUpdated: new Date(),
       },
     };

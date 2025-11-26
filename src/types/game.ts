@@ -27,6 +27,7 @@ export interface GameSummary {
 /**
  * Active game list item for TOP page display
  * Feature: 005-top-active-games
+ * Feature: 007-game-closure - Added status field to display game state
  * Contains information needed to display an active game in the list
  */
 export interface ActiveGameListItem {
@@ -44,6 +45,8 @@ export interface ActiveGameListItem {
   formattedCreatedAt: string;
   /** Session ID of the game creator (for authorization checks) */
   creatorId: string;
+  /** Current game status */
+  status: '出題中' | '締切';
 }
 
 /**
@@ -60,4 +63,20 @@ export interface ActiveGamesResponse {
   nextCursor: string | null;
   /** Total count of all active games */
   total: number;
+}
+
+/**
+ * Status filter options for TOP page
+ * Feature: 007-game-closure
+ */
+export type GameStatusFilter = '出題中' | '締切' | 'すべて';
+
+/**
+ * Game list item with status information
+ * Feature: 007-game-closure
+ * Extended from ActiveGameListItem to include status field
+ */
+export interface GameListItemWithStatus extends ActiveGameListItem {
+  /** Current game status */
+  status: '出題中' | '締切';
 }

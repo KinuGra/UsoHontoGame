@@ -122,8 +122,9 @@ export interface IGameRepository {
 
   /**
    * Find active games with pagination and player count
+   * Feature: 007-game-closure - Updated to include both '出題中' and '締切' games
    * @param params Pagination parameters
-   * @returns Games with metadata including creator ID
+   * @returns Games with metadata including creator ID and status
    */
   findActiveGamesWithPagination(params: { limit: number; skip: number }): Promise<{
     games: Array<{
@@ -133,6 +134,30 @@ export interface IGameRepository {
       playerCount: number;
       playerLimit: number | null;
       creatorId: string;
+      status: '出題中' | '締切';
+    }>;
+    total: number;
+  }>;
+
+  /**
+   * Find games with status filter (active and/or closed)
+   * Feature: 007-game-closure
+   * @param params Pagination and filter parameters
+   * @returns Games matching filter with pagination metadata
+   */
+  findGamesWithStatusFilter(params: {
+    limit: number;
+    skip: number;
+    statusFilter: '出題中' | '締切' | 'すべて';
+  }): Promise<{
+    games: Array<{
+      id: string;
+      title: string;
+      createdAt: Date;
+      playerCount: number;
+      playerLimit: number | null;
+      creatorId: string;
+      status: '出題中' | '締切';
     }>;
     total: number;
   }>;

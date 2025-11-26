@@ -1,15 +1,16 @@
 // API Route: Response Status Dashboard
 // Feature: 006-results-dashboard, User Story 1
+// Feature: 007-game-closure, User Story 3 (added closed game support)
 // Returns real-time response submission status (publicly accessible)
 
-import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { GetResponseStatus } from '@/server/application/use-cases/results/GetResponseStatus';
 import { SessionServiceContainer } from '@/server/infrastructure/di/SessionServiceContainer';
-import { createGameRepository, createAnswerRepository } from '@/server/infrastructure/repositories';
+import { createAnswerRepository, createGameRepository } from '@/server/infrastructure/repositories';
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ gameId: string }> }
 ) {
   try {
@@ -17,10 +18,10 @@ export async function GET(
     const { gameId } = await params;
 
     // Validate session
-    let sessionId: string;
+    let _sessionId: string;
     try {
       const sessionService = SessionServiceContainer.getSessionService();
-      sessionId = await sessionService.requireCurrentSession();
+      _sessionId = await sessionService.requireCurrentSession();
     } catch {
       return NextResponse.json(
         { error: 'Unauthorized', details: 'Session required' },
@@ -51,7 +52,7 @@ export async function GET(
         return NextResponse.json(
           {
             error: 'Game not accepting responses',
-            details: "Dashboard only available when game status is '出題中'",
+            details: "Dashboard only available when game status is '出題中' or '締切'",
           },
           { status: 400 }
         );
