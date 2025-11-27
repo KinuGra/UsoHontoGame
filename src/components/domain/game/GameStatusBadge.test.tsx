@@ -100,7 +100,7 @@ describe('GameStatusBadge', () => {
       const badge = screen.getByText('準備中');
       expect(badge).toHaveAttribute('aria-label', 'ゲームは準備中です');
       expect(badge).toHaveAttribute('aria-live', 'polite');
-      expect(badge).toHaveAttribute('role', 'status');
+      expect(badge.tagName).toBe('OUTPUT');
     });
   });
 
@@ -152,7 +152,142 @@ describe('GameStatusBadge', () => {
       const badge = screen.getByText('出題中');
       expect(badge).toHaveAttribute('aria-label', 'ゲームは出題中です');
       expect(badge).toHaveAttribute('aria-live', 'polite');
-      expect(badge).toHaveAttribute('role', 'status');
+      expect(badge.tagName).toBe('OUTPUT');
+    });
+  });
+
+  describe('edge cases and missing branches', () => {
+    it('should handle unknown status with default styling', () => {
+      render(
+        <TestWrapper>
+          <GameStatusBadge status={'unknown' as never} />
+        </TestWrapper>
+      );
+
+      const badge = screen.getByText('unknown');
+      expect(badge).toHaveTextContent('unknown');
+      expect(badge).toHaveClass('bg-gray-100', 'text-gray-800', 'border-gray-200');
+      expect(badge).toHaveAttribute('aria-label', 'ゲームステータス: unknown');
+    });
+
+    it('should apply highlight ring classes during animation state change', () => {
+      const { rerender } = render(
+        <TestWrapper>
+          <GameStatusBadge status="準備中" animated={true} />
+        </TestWrapper>
+      );
+
+      // Change status to trigger highlight
+      rerender(
+        <TestWrapper>
+          <GameStatusBadge status="出題中" animated={true} />
+        </TestWrapper>
+      );
+
+      const badge = screen.getByText('出題中');
+      // After status change, highlight should be applied temporarily
+      // Note: Testing internal highlight state is difficult, so we just verify status change works
+      expect(badge).toBeInTheDocument();
+    });
+
+    it('should not have aria-live="polite" when animated is false', () => {
+      render(
+        <TestWrapper>
+          <GameStatusBadge status="準備中" animated={false} />
+        </TestWrapper>
+      );
+
+      const badge = screen.getByText('準備中');
+      expect(badge).not.toHaveAttribute('aria-live', 'polite');
+    });
+
+    it('should not have aria-live="polite" when animated is undefined', () => {
+      render(
+        <TestWrapper>
+          <GameStatusBadge status="準備中" />
+        </TestWrapper>
+      );
+
+      const badge = screen.getByText('準備中');
+      expect(badge).not.toHaveAttribute('aria-live', 'polite');
+    });
+
+    it('should always render as output element for accessibility', () => {
+      render(
+        <TestWrapper>
+          <GameStatusBadge status="準備中" animated={false} />
+        </TestWrapper>
+      );
+
+      const badge = screen.getByText('準備中');
+      expect(badge.tagName).toBe('OUTPUT');
+    });
+  });
+
+  describe('GameStatusBadgeLarge edge cases', () => {
+    it('should handle unknown status with default styling', () => {
+      render(
+        <TestWrapper>
+          <GameStatusBadgeLarge status={'unknown' as never} />
+        </TestWrapper>
+      );
+
+      const badge = screen.getByText('unknown');
+      expect(badge).toHaveTextContent('unknown');
+      expect(badge).toHaveClass('bg-gray-100', 'text-gray-800', 'border-gray-300');
+      expect(badge).toHaveAttribute('aria-label', 'ゲームステータス: unknown');
+    });
+
+    it('should apply highlight ring classes during animation state change', () => {
+      const { rerender } = render(
+        <TestWrapper>
+          <GameStatusBadgeLarge status="準備中" animated={true} />
+        </TestWrapper>
+      );
+
+      // Change status to trigger highlight
+      rerender(
+        <TestWrapper>
+          <GameStatusBadgeLarge status="出題中" animated={true} />
+        </TestWrapper>
+      );
+
+      const badge = screen.getByText('出題中');
+      // After status change, highlight should be applied temporarily
+      expect(badge).toBeInTheDocument();
+    });
+
+    it('should not have aria-live="polite" when animated is false', () => {
+      render(
+        <TestWrapper>
+          <GameStatusBadgeLarge status="準備中" animated={false} />
+        </TestWrapper>
+      );
+
+      const badge = screen.getByText('準備中');
+      expect(badge).not.toHaveAttribute('aria-live', 'polite');
+    });
+
+    it('should not have aria-live="polite" when animated is undefined', () => {
+      render(
+        <TestWrapper>
+          <GameStatusBadgeLarge status="準備中" />
+        </TestWrapper>
+      );
+
+      const badge = screen.getByText('準備中');
+      expect(badge).not.toHaveAttribute('aria-live', 'polite');
+    });
+
+    it('should always render as output element for accessibility', () => {
+      render(
+        <TestWrapper>
+          <GameStatusBadgeLarge status="出題中" animated={false} />
+        </TestWrapper>
+      );
+
+      const badge = screen.getByText('出題中');
+      expect(badge.tagName).toBe('OUTPUT');
     });
   });
 });

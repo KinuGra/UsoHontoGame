@@ -1,43 +1,51 @@
-// App Router Page: Response Status Dashboard
+// Response Status Dashboard Page (Server Component)
 // Feature: 006-results-dashboard, User Story 1
-// Server Component that handles session check and delegates to ResponseStatusPage
+// Feature: 007-game-closure, User Story 3 (added closed game support)
+// Displays real-time response submission status for active/closed games
 
 import { redirect } from 'next/navigation';
-import { ResponseStatusPage } from '@/components/pages/ResponseStatusPage';
-import { GetResponseStatus } from '@/server/application/use-cases/results/GetResponseStatus';
+import { ResponseStatusPage, ResponseStatusPageError } from '@/components/pages/ResponseStatusPage';
 import { SessionServiceContainer } from '@/server/infrastructure/di/SessionServiceContainer';
-import { createAnswerRepository, createGameRepository } from '@/server/infrastructure/repositories';
 
 interface PageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{
+    id: string;
+  }>;
 }
 
-/**
- * Next.js App Router page for /games/[id]/dashboard
- * Handles session check and initial data fetching
- * Dashboard is publicly accessible to all users
- */
 export default async function Page({ params }: PageProps) {
-  // Check session
+  // Session verification
   const sessionService = SessionServiceContainer.getSessionService();
   const sessionId = await sessionService.getCurrentSessionId();
+
   if (!sessionId) {
     redirect('/');
   }
 
-  // Get game ID from params
+  // Extract gameId from params
   const { id: gameId } = await params;
 
-  // Fetch initial response status data (for SSR)
-  const gameRepository = createGameRepository();
-  const answerRepository = createAnswerRepository();
-  const useCase = new GetResponseStatus(gameRepository, answerRepository);
+  // Fetch initial data via API endpoint
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+  const response = await fetch(`${baseUrl}/api/games/${gameId}/dashboard`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    cache: 'no-store', // Ensure fresh data for SSR
+  });
 
-  const result = await useCase.execute(gameId);
+  // Handle non-OK responses
+  if (!response.ok) {
+    const error = await response.json();
+    const errorMessage = error.details || error.error || 'Failed to load dashboard data';
+    return <ResponseStatusPageError errorMessage={errorMessage} />;
+  }
 
-  // Pass initial data to client component
-  // Client component will handle polling and real-time updates
-  return (
-    <ResponseStatusPage gameId={gameId} initialData={result.success ? result.data : undefined} />
-  );
+  // Parse successful response
+  const data = await response.json();
+
+  // Delegate to page component with initial data
+  return <ResponseStatusPage gameId={gameId} initialData={data} />;
 }

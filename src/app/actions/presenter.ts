@@ -10,8 +10,6 @@ import type { PresenterWithLieDto } from '@/server/application/dto/PresenterWith
 import { AddEpisode } from '@/server/application/use-cases/games/AddEpisode';
 import { AddPresenter } from '@/server/application/use-cases/games/AddPresenter';
 import { AddPresenterWithEpisodes } from '@/server/application/use-cases/games/AddPresenterWithEpisodes';
-import { GetPresenterEpisodes } from '@/server/application/use-cases/games/GetPresenterEpisodes';
-import { GetPresentersByGameId } from '@/server/application/use-cases/games/GetPresentersByGameId';
 import { RemovePresenter } from '@/server/application/use-cases/games/RemovePresenter';
 import {
   AddEpisodeSchema,
@@ -235,90 +233,6 @@ export async function addEpisodeAction(
       errors: {
         _form: [error instanceof Error ? error.message : 'エピソードの追加に失敗しました'],
       },
-    };
-  }
-}
-
-/**
- * Get Presenter Episodes Server Action
- * Retrieves a presenter with their episodes
- */
-export async function getPresenterEpisodesAction(
-  presenterId: string
-): Promise<{ success: true; presenter: PresenterWithLieDto } | { success: false; error: string }> {
-  try {
-    // Get session
-    const sessionService = SessionServiceContainer.getSessionService();
-    const sessionId = await sessionService.getCurrentSessionId();
-
-    if (!sessionId) {
-      return {
-        success: false,
-        error: 'セッションが見つかりません。ログインし直してください。',
-      };
-    }
-
-    // Execute use case
-    const repository = createGameRepository();
-    const useCase = new GetPresenterEpisodes(repository);
-
-    const result = await useCase.execute({
-      presenterId,
-      requesterId: sessionId,
-    });
-
-    return {
-      success: true,
-      presenter: result.presenter,
-    };
-  } catch (error) {
-    console.error('Failed to get presenter episodes:', error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'プレゼンターの取得に失敗しました',
-    };
-  }
-}
-
-/**
- * Get Presenters by Game ID Server Action
- * Retrieves all presenters for a game with their episodes
- */
-export async function getPresentersAction(
-  gameId: string
-): Promise<
-  { success: true; presenters: PresenterWithLieDto[] } | { success: false; error: string }
-> {
-  try {
-    // Get session
-    const sessionService = SessionServiceContainer.getSessionService();
-    const sessionId = await sessionService.getCurrentSessionId();
-
-    if (!sessionId) {
-      return {
-        success: false,
-        error: 'セッションが見つかりません。ログインし直してください。',
-      };
-    }
-
-    // Execute use case
-    const repository = createGameRepository();
-    const useCase = new GetPresentersByGameId(repository);
-
-    const result = await useCase.execute({
-      gameId,
-      requesterId: sessionId,
-    });
-
-    return {
-      success: true,
-      presenters: result.presenters,
-    };
-  } catch (error) {
-    console.error('Failed to get presenters:', error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'プレゼンターの取得に失敗しました',
     };
   }
 }

@@ -105,7 +105,9 @@ export function ResponseStatusPage({ gameId, initialData }: ResponseStatusPagePr
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
+                  aria-label="ゲーム終了"
                 >
+                  <title>ゲーム終了</title>
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -134,7 +136,9 @@ export function ResponseStatusPage({ gameId, initialData }: ResponseStatusPagePr
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
+                  aria-label="エラー"
                 >
+                  <title>エラー</title>
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -187,3 +191,6 @@ export function ResponseStatusPage({ gameId, initialData }: ResponseStatusPagePr
     </AccessibilityProvider>
   );
 }
+
+// Export error component for error handling
+export { ResponseStatusPageError } from './ResponseStatusPageError';

@@ -396,4 +396,130 @@ describe('Presenter', () => {
       expect(Object.isFrozen(episodesRef)).toBe(true);
     });
   });
+
+  describe('createIncomplete', () => {
+    it('should create presenter with 0 episodes', () => {
+      // Tests line 75 branch: episodes.length > 3 (false branch)
+      const props = {
+        id: 'presenter-123',
+        gameId: 'game-456',
+        nickname: 'PlayerOne',
+        episodes: [],
+        createdAt: new Date(),
+      };
+
+      const presenter = Presenter.createIncomplete(props);
+
+      expect(presenter.id).toBe(props.id);
+      expect(presenter.episodes).toHaveLength(0);
+    });
+
+    it('should create presenter with 1 episode', () => {
+      // Tests line 75 branch: episodes.length > 3 (false branch)
+      const episodes = [createEpisode('ep-1', 'Story 1', false)];
+      const props = {
+        id: 'presenter-123',
+        gameId: 'game-456',
+        nickname: 'PlayerOne',
+        episodes,
+        createdAt: new Date(),
+      };
+
+      const presenter = Presenter.createIncomplete(props);
+
+      expect(presenter.id).toBe(props.id);
+      expect(presenter.episodes).toHaveLength(1);
+    });
+
+    it('should create presenter with 2 episodes', () => {
+      // Tests line 75 branch: episodes.length > 3 (false branch)
+      const episodes = [
+        createEpisode('ep-1', 'Story 1', false),
+        createEpisode('ep-2', 'Story 2', true),
+      ];
+      const props = {
+        id: 'presenter-123',
+        gameId: 'game-456',
+        nickname: 'PlayerOne',
+        episodes,
+        createdAt: new Date(),
+      };
+
+      const presenter = Presenter.createIncomplete(props);
+
+      expect(presenter.id).toBe(props.id);
+      expect(presenter.episodes).toHaveLength(2);
+    });
+
+    it('should create presenter with 3 episodes', () => {
+      // Tests line 75 branch: episodes.length > 3 (false branch)
+      const episodes = createValidEpisodes();
+      const props = {
+        id: 'presenter-123',
+        gameId: 'game-456',
+        nickname: 'PlayerOne',
+        episodes,
+        createdAt: new Date(),
+      };
+
+      const presenter = Presenter.createIncomplete(props);
+
+      expect(presenter.id).toBe(props.id);
+      expect(presenter.episodes).toHaveLength(3);
+    });
+
+    it('should throw ValidationError for more than 3 episodes', () => {
+      // Tests line 75-79 branch: episodes.length > 3 (true branch)
+      const episodes = [
+        createEpisode('ep-1', 'Story 1', false),
+        createEpisode('ep-2', 'Story 2', false),
+        createEpisode('ep-3', 'Story 3', false),
+        createEpisode('ep-4', 'Story 4', true),
+      ];
+      const props = {
+        id: 'presenter-123',
+        gameId: 'game-456',
+        nickname: 'PlayerOne',
+        episodes,
+        createdAt: new Date(),
+      };
+
+      expect(() => Presenter.createIncomplete(props)).toThrow(ValidationError);
+      expect(() => Presenter.createIncomplete(props)).toThrow(
+        'Presenter cannot have more than 3 episodes (has 4)'
+      );
+    });
+
+    it('should throw ValidationError for empty nickname', () => {
+      // Tests line 70-72 branch: nickname.trim().length === 0 (true branch)
+      const props = {
+        id: 'presenter-123',
+        gameId: 'game-456',
+        nickname: '',
+        episodes: [],
+        createdAt: new Date(),
+      };
+
+      expect(() => Presenter.createIncomplete(props)).toThrow(ValidationError);
+      expect(() => Presenter.createIncomplete(props)).toThrow('Presenter nickname cannot be empty');
+    });
+  });
+
+  describe('getLieEpisode error handling', () => {
+    it('should throw error when presenter does not have complete episodes', () => {
+      // Tests line 137-139 branch: !hasCompleteEpisodes() (true branch)
+      const episodes = [createEpisode('ep-1', 'Story 1', false)];
+      const props = {
+        id: 'presenter-123',
+        gameId: 'game-456',
+        nickname: 'PlayerOne',
+        episodes,
+        createdAt: new Date(),
+      };
+
+      const presenter = Presenter.createIncomplete(props);
+
+      expect(() => presenter.getLieEpisode()).toThrow('Presenter does not have complete episodes');
+    });
+  });
 });

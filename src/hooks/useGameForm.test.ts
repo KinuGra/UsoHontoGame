@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 import { useGameForm } from './useGameForm';
 
@@ -13,6 +13,12 @@ vi.mock('@/app/actions/game', () => ({
   updateGameAction: vi.fn(),
 }));
 
+// Import mocked functions
+import { createGameAction, updateGameAction } from '@/app/actions/game';
+
+const mockCreateGameAction = createGameAction as Mock;
+const mockUpdateGameAction = updateGameAction as Mock;
+
 import { useRouter } from 'next/navigation';
 
 const mockUseRouter = useRouter as Mock;
@@ -20,6 +26,23 @@ const mockUseRouter = useRouter as Mock;
 describe('useGameForm', () => {
   const mockPush = vi.fn();
   const mockRefresh = vi.fn();
+
+  // Helper function to create mock form event with FormData
+  const createMockFormEvent = (fields: Record<string, string>) => {
+    const formElement = document.createElement('form');
+
+    for (const [key, value] of Object.entries(fields)) {
+      const input = document.createElement('input');
+      input.name = key;
+      input.value = value;
+      formElement.appendChild(input);
+    }
+
+    return {
+      preventDefault: vi.fn(),
+      currentTarget: formElement,
+    } as unknown as React.FormEvent<HTMLFormElement>;
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -116,6 +139,323 @@ describe('useGameForm', () => {
     it('should start with isSubmitting false', () => {
       const { result } = renderHook(() => useGameForm({ mode: 'create' }));
       expect(result.current.isSubmitting).toBe(false);
+    });
+  });
+
+  describe('handleSubmit', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    describe('form submission', () => {
+      it('should call preventDefault on form event', async () => {
+        const { result } = renderHook(() => useGameForm({ mode: 'create' }));
+        const mockEvent = createMockFormEvent({ playerLimit: '10' });
+
+        await act(async () => {
+          await result.current.handleSubmit(mockEvent);
+        });
+
+        expect(mockEvent.preventDefault).toHaveBeenCalled();
+      });
+
+      it('should reset errors and success state on submit', async () => {
+        const { result } = renderHook(() => useGameForm({ mode: 'create' }));
+        const mockEvent = createMockFormEvent({ playerLimit: '10' });
+
+        await act(async () => {
+          await result.current.handleSubmit(mockEvent);
+        });
+
+        expect(result.current.isSuccess).toBe(false);
+      });
+    });
+
+    describe('create mode validation', () => {
+      it('should set errors when validation fails', async () => {
+        const { result } = renderHook(() => useGameForm({ mode: 'create' }));
+        const mockEvent = createMockFormEvent({ playerLimit: 'invalid' });
+
+        await act(async () => {
+          await result.current.handleSubmit(mockEvent);
+        });
+
+        expect(result.current.errors).toBeDefined();
+        expect(result.current.isSuccess).toBe(false);
+      });
+
+      it('should not call createGameAction when validation fails', async () => {
+        const { result } = renderHook(() => useGameForm({ mode: 'create' }));
+        const mockEvent = createMockFormEvent({ playerLimit: '0' }); // Invalid: below minimum
+
+        await act(async () => {
+          await result.current.handleSubmit(mockEvent);
+        });
+
+        expect(mockCreateGameAction).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('create mode server action', () => {
+      beforeEach(() => {
+        mockUseRouter.mockReturnValue({
+          push: vi.fn(),
+          refresh: vi.fn(),
+        });
+      });
+
+      it('should call createGameAction with formData when validation passes', async () => {
+        mockCreateGameAction.mockResolvedValue({
+          success: true,
+          game: { id: 'test-game-id', name: 'Test Game' },
+        });
+
+        const { result } = renderHook(() => useGameForm({ mode: 'create' }));
+        const mockEvent = createMockFormEvent({ playerLimit: '10' });
+
+        await act(async () => {
+          await result.current.handleSubmit(mockEvent);
+        });
+
+        await vi.waitFor(() => {
+          expect(mockCreateGameAction).toHaveBeenCalled();
+        });
+      });
+
+      it('should set createdGame and isSuccess when createGameAction succeeds', async () => {
+        const mockGame = { id: 'test-game-id', name: 'Test Game' };
+        mockCreateGameAction.mockResolvedValue({
+          success: true,
+          game: mockGame,
+        });
+
+        const { result } = renderHook(() => useGameForm({ mode: 'create' }));
+        const mockEvent = createMockFormEvent({ playerLimit: '10' });
+
+        await act(async () => {
+          await result.current.handleSubmit(mockEvent);
+        });
+
+        await vi.waitFor(() => {
+          expect(result.current.createdGame).toEqual(mockGame);
+          expect(result.current.isSuccess).toBe(true);
+        });
+      });
+
+      it('should navigate to /games after 1.5s when createGameAction succeeds', async () => {
+        const mockPushLocal = vi.fn();
+        mockUseRouter.mockReturnValue({
+          push: mockPushLocal,
+          refresh: vi.fn(),
+        });
+
+        mockCreateGameAction.mockResolvedValue({
+          success: true,
+          game: { id: 'test-game-id', name: 'Test Game' },
+        });
+
+        const { result } = renderHook(() => useGameForm({ mode: 'create' }));
+        const mockEvent = createMockFormEvent({ playerLimit: '10' });
+
+        await act(async () => {
+          await result.current.handleSubmit(mockEvent);
+        });
+
+        await vi.waitFor(() => {
+          expect(mockCreateGameAction).toHaveBeenCalled();
+        });
+
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(1500);
+        });
+
+        expect(mockPushLocal).toHaveBeenCalledWith('/games');
+      });
+
+      it('should set errors when createGameAction fails', async () => {
+        const mockErrors = { playerLimit: ['プレイヤー数が無効です'] };
+        mockCreateGameAction.mockResolvedValue({
+          success: false,
+          errors: mockErrors,
+        });
+
+        const { result } = renderHook(() => useGameForm({ mode: 'create' }));
+        const mockEvent = createMockFormEvent({ playerLimit: '10' });
+
+        await act(async () => {
+          await result.current.handleSubmit(mockEvent);
+        });
+
+        await vi.waitFor(() => {
+          expect(result.current.errors).toEqual(mockErrors);
+          expect(result.current.isSuccess).toBe(false);
+        });
+      });
+    });
+
+    describe('edit mode validation', () => {
+      it('should set errors when validation fails in edit mode', async () => {
+        const { result } = renderHook(() => useGameForm({ mode: 'edit', gameId: 'test-id' }));
+        const mockEvent = createMockFormEvent({ gameId: 'test-id', playerLimit: '0' }); // Invalid
+
+        await act(async () => {
+          await result.current.handleSubmit(mockEvent);
+        });
+
+        expect(result.current.errors).toBeDefined();
+        expect(result.current.isSuccess).toBe(false);
+      });
+
+      it('should not call updateGameAction when validation fails', async () => {
+        const { result } = renderHook(() => useGameForm({ mode: 'edit', gameId: 'test-id' }));
+        const mockEvent = createMockFormEvent({ gameId: 'test-id', playerLimit: '-1' }); // Invalid
+
+        await act(async () => {
+          await result.current.handleSubmit(mockEvent);
+        });
+
+        expect(mockUpdateGameAction).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('edit mode server action', () => {
+      beforeEach(() => {
+        mockUseRouter.mockReturnValue({
+          push: vi.fn(),
+          refresh: vi.fn(),
+        });
+      });
+
+      it('should call updateGameAction with formData when validation passes', async () => {
+        mockUpdateGameAction.mockResolvedValue({
+          success: true,
+        });
+
+        const { result } = renderHook(() => useGameForm({ mode: 'edit', gameId: 'test-id' }));
+        const mockEvent = createMockFormEvent({ gameId: 'test-id', playerLimit: '15' });
+
+        await act(async () => {
+          await result.current.handleSubmit(mockEvent);
+        });
+
+        await vi.waitFor(() => {
+          expect(mockUpdateGameAction).toHaveBeenCalled();
+        });
+      });
+
+      it('should set isSuccess when updateGameAction succeeds', async () => {
+        mockUpdateGameAction.mockResolvedValue({
+          success: true,
+        });
+
+        const { result } = renderHook(() => useGameForm({ mode: 'edit', gameId: 'test-id' }));
+        const mockEvent = createMockFormEvent({ gameId: 'test-id', playerLimit: '15' });
+
+        await act(async () => {
+          await result.current.handleSubmit(mockEvent);
+        });
+
+        await vi.waitFor(() => {
+          expect(result.current.isSuccess).toBe(true);
+        });
+      });
+
+      it('should call router.refresh after 1s when updateGameAction succeeds', async () => {
+        const mockRefreshLocal = vi.fn();
+        mockUseRouter.mockReturnValue({
+          push: vi.fn(),
+          refresh: mockRefreshLocal,
+        });
+
+        mockUpdateGameAction.mockResolvedValue({
+          success: true,
+        });
+
+        const { result } = renderHook(() => useGameForm({ mode: 'edit', gameId: 'test-id' }));
+        const mockEvent = createMockFormEvent({ gameId: 'test-id', playerLimit: '15' });
+
+        await act(async () => {
+          await result.current.handleSubmit(mockEvent);
+        });
+
+        await vi.waitFor(() => {
+          expect(mockUpdateGameAction).toHaveBeenCalled();
+        });
+
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(1000);
+        });
+
+        expect(mockRefreshLocal).toHaveBeenCalled();
+      });
+
+      it('should set errors when updateGameAction fails', async () => {
+        const mockErrors = { gameId: ['ゲームが見つかりません'] };
+        mockUpdateGameAction.mockResolvedValue({
+          success: false,
+          errors: mockErrors,
+        });
+
+        const { result } = renderHook(() => useGameForm({ mode: 'edit', gameId: 'test-id' }));
+        const mockEvent = createMockFormEvent({ gameId: 'test-id', playerLimit: '15' });
+
+        await act(async () => {
+          await result.current.handleSubmit(mockEvent);
+        });
+
+        await vi.waitFor(() => {
+          expect(result.current.errors).toEqual(mockErrors);
+          expect(result.current.isSuccess).toBe(false);
+        });
+      });
+    });
+
+    describe('error handling', () => {
+      it('should catch and handle unexpected errors in create mode', async () => {
+        const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        mockCreateGameAction.mockRejectedValue(new Error('Network error'));
+
+        const { result } = renderHook(() => useGameForm({ mode: 'create' }));
+        const mockEvent = createMockFormEvent({ playerLimit: '10' });
+
+        await act(async () => {
+          await result.current.handleSubmit(mockEvent);
+        });
+
+        await vi.waitFor(() => {
+          expect(result.current.errors).toEqual({
+            _form: ['予期しないエラーが発生しました'],
+          });
+          expect(consoleErrorSpy).toHaveBeenCalledWith('Form submission error:', expect.any(Error));
+        });
+
+        consoleErrorSpy.mockRestore();
+      });
+
+      it('should catch and handle unexpected errors in edit mode', async () => {
+        const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        mockUpdateGameAction.mockRejectedValue(new Error('Server error'));
+
+        const { result } = renderHook(() => useGameForm({ mode: 'edit', gameId: 'test-id' }));
+        const mockEvent = createMockFormEvent({ gameId: 'test-id', playerLimit: '15' });
+
+        await act(async () => {
+          await result.current.handleSubmit(mockEvent);
+        });
+
+        await vi.waitFor(() => {
+          expect(result.current.errors).toEqual({
+            _form: ['予期しないエラーが発生しました'],
+          });
+          expect(consoleErrorSpy).toHaveBeenCalledWith('Form submission error:', expect.any(Error));
+        });
+
+        consoleErrorSpy.mockRestore();
+      });
     });
   });
 });
