@@ -207,6 +207,62 @@ describe('CloseGameButton', () => {
         })
       );
     });
+
+    it('should call onClosed when onSuccess callback is invoked', () => {
+      const mockOnClosed = vi.fn();
+      let capturedOnSuccess: (() => void) | undefined;
+
+      vi.mocked(mockUseCloseGame).mockImplementation((config: any) => {
+        capturedOnSuccess = config.onSuccess;
+        return {
+          closeGame: vi.fn(),
+          isClosing: false,
+          error: null,
+        };
+      });
+
+      render(
+        <TestWrapper>
+          <CloseGameButton {...defaultProps} onClosed={mockOnClosed} />
+        </TestWrapper>
+      );
+
+      // Invoke the onSuccess callback
+      expect(capturedOnSuccess).toBeDefined();
+      capturedOnSuccess?.();
+
+      // Verify onClosed was called
+      expect(mockOnClosed).toHaveBeenCalledTimes(1);
+    });
+
+    it('should log error when onError callback is invoked', () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      let capturedOnError: ((error: string) => void) | undefined;
+
+      vi.mocked(mockUseCloseGame).mockImplementation((config: any) => {
+        capturedOnError = config.onError;
+        return {
+          closeGame: vi.fn(),
+          isClosing: false,
+          error: null,
+        };
+      });
+
+      render(
+        <TestWrapper>
+          <CloseGameButton {...defaultProps} />
+        </TestWrapper>
+      );
+
+      // Invoke the onError callback
+      expect(capturedOnError).toBeDefined();
+      capturedOnError?.('Test error message');
+
+      // Verify console.error was called
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to close game:', 'Test error message');
+
+      consoleErrorSpy.mockRestore();
+    });
   });
 
   describe('error handling', () => {
