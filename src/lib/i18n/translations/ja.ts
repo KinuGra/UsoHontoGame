@@ -103,7 +103,8 @@ export const ja: Translations = {
     answerSubmitted: '回答を送信しました',
     answerForm: '回答フォーム',
     detectLieTitle: 'ウソを見抜いてください',
-    detectLieDescription: '各プレゼンターの3つのエピソードの中から、ウソのエピソードを1つ選んでください。',
+    detectLieDescription:
+      '各プレゼンターの3つのエピソードの中から、ウソのエピソードを1つ選んでください。',
     selectAllEpisodes: 'すべてのプレゼンターの回答を選択してください',
     ready: '回答準備完了',
   },

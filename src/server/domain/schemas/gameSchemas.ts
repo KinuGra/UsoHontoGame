@@ -15,11 +15,7 @@ export const GameStatusSchema = z.enum(['準備中', '出題中', '締切'], {
 
 // Input Schemas (Server Actions & Forms)
 export const CreateGameSchema = z.object({
-  name: z
-    .string()
-    .max(100, { message: 'GAME_NAME_TOO_LONG' })
-    .nullable()
-    .optional(),
+  name: z.string().max(100, { message: 'GAME_NAME_TOO_LONG' }).nullable().optional(),
   playerLimit: z
     .number()
     .int({ message: 'GAME_PLAYER_LIMIT_NOT_INTEGER' })

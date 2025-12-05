@@ -10,14 +10,8 @@ import { z } from 'zod';
 export const SubmitAnswerSchema = z.object({
   gameId: z.string().min(1, 'REQUIRED'),
   selections: z
-    .record(
-      z.string().min(1, 'REQUIRED'),
-      z.string().min(1, 'REQUIRED')
-    )
-    .refine(
-      (selections) => Object.keys(selections).length > 0,
-      'ANSWER_NO_SELECTIONS'
-    ),
+    .record(z.string().min(1, 'REQUIRED'), z.string().min(1, 'REQUIRED'))
+    .refine((selections) => Object.keys(selections).length > 0, 'ANSWER_NO_SELECTIONS'),
 });
 
 export type SubmitAnswerInput = z.infer<typeof SubmitAnswerSchema>;
