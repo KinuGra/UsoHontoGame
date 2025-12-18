@@ -1,0 +1,96 @@
+/**
+ * Typography Design Tokens
+ * Feature: 009-apple-hig-ui-redesign
+ * San Francisco font system based on Apple's Human Interface Guidelines
+ */
+
+:root {
+  /* Font Families */
+  --font-family-base:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  --font-family-mono:
+    "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+
+  /* Font Sizes - Apple HIG Type Scale */
+  --font-size-display: 28px; /* Large Title */
+  --font-size-title-1: 22px; /* Title 1 */
+  --font-size-title-2: 20px; /* Title 2 */
+  --font-size-title-3: 18px; /* Title 3 */
+  --font-size-body: 16px; /* Body */
+  --font-size-callout: 15px; /* Callout */
+  --font-size-caption-1: 14px; /* Caption 1 */
+  --font-size-caption-2: 12px; /* Caption 2 */
+
+  /* Font Weights */
+  --font-weight-regular: 400; /* Regular */
+  --font-weight-medium: 500; /* Medium */
+  --font-weight-semibold: 600; /* Semibold */
+  --font-weight-bold: 700; /* Bold */
+
+  /* Line Heights */
+  --line-height-tight: 1.2; /* For headings */
+  --line-height-normal: 1.5; /* For body text */
+  --line-height-relaxed: 1.75; /* For long-form content */
+
+  /* Letter Spacing */
+  --letter-spacing-tight: -0.01em; /* For large text */
+  --letter-spacing-normal: 0em; /* Default */
+  --letter-spacing-wide: 0.02em; /* For small text */
+
+  /* Text Decoration */
+  --text-decoration-underline: underline;
+  --text-decoration-none: none;
+
+  /* Text Transform */
+  --text-transform-uppercase: uppercase;
+  --text-transform-lowercase: lowercase;
+  --text-transform-capitalize: capitalize;
+  --text-transform-none: none;
+}
+
+/* Responsive Typography Adjustments */
+
+/* Mobile (< 768px) - Slightly smaller sizes */
+@media (max-width: 767px) {
+  :root {
+    --font-size-display: 24px;
+    --font-size-title-1: 20px;
+    --font-size-title-2: 18px;
+    --font-size-title-3: 16px;
+    /* Body remains 16px for readability */
+  }
+}
+
+/* Tablet (768px - 1023px) - Default sizes */
+@media (min-width: 768px) and (max-width: 1023px) {
+  :root {
+    --font-size-display: 26px;
+    --font-size-title-1: 21px;
+    /* Other sizes remain at base values */
+  }
+}
+
+/* Desktop (≥ 1024px) - Full scale */
+@media (min-width: 1024px) {
+  :root {
+    /* All sizes at base values */
+  }
+}
+
+/* Accessibility: Support for user font size preferences */
+@media (prefers-reduced-motion: no-preference) {
+  :root {
+    /* Enable smooth font size transitions if motion is not reduced */
+    font-size: 100%; /* Respect browser default (usually 16px) */
+  }
+}
+
+/* High contrast mode adjustments */
+@media (prefers-contrast: high) {
+  :root {
+    --font-weight-regular: 500; /* Slightly bolder for better readability */
+    --font-weight-medium: 600;
+    --font-weight-semibold: 700;
+    --font-weight-bold: 800;
+  }
+}

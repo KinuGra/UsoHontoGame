@@ -1,0 +1,145 @@
+/**
+ * Color Design Tokens
+ * Feature: 009-apple-hig-ui-redesign
+ * Based on Apple's Human Interface Guidelines
+ */
+
+/* Light Mode (Default) */
+:root {
+  /* Primary Colors - Apple Blue */
+  --color-primary: #007aff;
+  --color-primary-hover: #0051d5;
+  --color-primary-active: #004fc2;
+
+  /* Semantic Colors */
+  --color-success: #34c759;
+  --color-error: #ff3b30;
+  --color-warning: #ff9500;
+  --color-info: #5ac8fa;
+
+  /* Background Colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f2f2f7;
+  --bg-tertiary: #e5e5ea;
+  --bg-elevated: #ffffff;
+  --bg-overlay: rgba(0, 0, 0, 0.4);
+
+  /* Text Colors */
+  --text-primary: #000000;
+  --text-secondary: #3c3c43;
+  --text-tertiary: #3c3c4399; /* 60% opacity */
+  --text-quaternary: #3c3c434d; /* 30% opacity */
+  --text-on-primary: #ffffff;
+
+  /* Border Colors */
+  --border-primary: #c6c6c8;
+  --border-secondary: #d1d1d6;
+  --border-tertiary: #e5e5ea;
+
+  /* Fill Colors (for controls) */
+  --fill-primary: #78788033; /* 20% opacity */
+  --fill-secondary: #78788028; /* 16% opacity */
+  --fill-tertiary: #7676801f; /* 12% opacity */
+  --fill-quaternary: #74748014; /* 8% opacity */
+
+  /* Surface Colors (for cards, modals) */
+  --surface-primary: #ffffff;
+  --surface-secondary: #f9f9f9;
+  --surface-tertiary: #f2f2f7;
+
+  /* Separator Colors */
+  --separator-opaque: #c6c6c8;
+  --separator-non-opaque: #3c3c4349; /* 29% opacity */
+}
+
+/* Dark Mode */
+[data-theme="dark"] {
+  /* Primary Colors - Apple Blue (adjusted for dark mode) */
+  --color-primary: #0a84ff;
+  --color-primary-hover: #409cff;
+  --color-primary-active: #68b5ff;
+
+  /* Semantic Colors (adjusted for dark mode) */
+  --color-success: #30d158;
+  --color-error: #ff453a;
+  --color-warning: #ff9f0a;
+  --color-info: #64d2ff;
+
+  /* Background Colors */
+  --bg-primary: #000000;
+  --bg-secondary: #1c1c1e;
+  --bg-tertiary: #2c2c2e;
+  --bg-elevated: #1c1c1e;
+  --bg-overlay: rgba(0, 0, 0, 0.6);
+
+  /* Text Colors */
+  --text-primary: #ffffff;
+  --text-secondary: #ebebf5;
+  --text-tertiary: #ebebf599; /* 60% opacity */
+  --text-quaternary: #ebebf54d; /* 30% opacity */
+  --text-on-primary: #ffffff;
+
+  /* Border Colors */
+  --border-primary: #38383a;
+  --border-secondary: #48484a;
+  --border-tertiary: #545456;
+
+  /* Fill Colors (for controls) */
+  --fill-primary: #7676803d; /* 24% opacity */
+  --fill-secondary: #78788033; /* 20% opacity */
+  --fill-tertiary: #7676802e; /* 18% opacity */
+  --fill-quaternary: #74748029; /* 16% opacity */
+
+  /* Surface Colors (for cards, modals) */
+  --surface-primary: #1c1c1e;
+  --surface-secondary: #2c2c2e;
+  --surface-tertiary: #3a3a3c;
+
+  /* Separator Colors */
+  --separator-opaque: #38383a;
+  --separator-non-opaque: #545458; /* Adjusted opacity for dark */
+}
+
+/* System Color Scheme Fallback */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    /* Automatically apply dark mode when system preference is dark */
+    /* and explicit light theme is not set */
+    --color-primary: #0a84ff;
+    --color-primary-hover: #409cff;
+    --color-primary-active: #68b5ff;
+
+    --color-success: #30d158;
+    --color-error: #ff453a;
+    --color-warning: #ff9f0a;
+    --color-info: #64d2ff;
+
+    --bg-primary: #000000;
+    --bg-secondary: #1c1c1e;
+    --bg-tertiary: #2c2c2e;
+    --bg-elevated: #1c1c1e;
+    --bg-overlay: rgba(0, 0, 0, 0.6);
+
+    --text-primary: #ffffff;
+    --text-secondary: #ebebf5;
+    --text-tertiary: #ebebf599;
+    --text-quaternary: #ebebf54d;
+    --text-on-primary: #ffffff;
+
+    --border-primary: #38383a;
+    --border-secondary: #48484a;
+    --border-tertiary: #545456;
+
+    --fill-primary: #7676803d;
+    --fill-secondary: #78788033;
+    --fill-tertiary: #7676802e;
+    --fill-quaternary: #74748029;
+
+    --surface-primary: #1c1c1e;
+    --surface-secondary: #2c2c2e;
+    --surface-tertiary: #3a3a3c;
+
+    --separator-opaque: #38383a;
+    --separator-non-opaque: #545458;
+  }
+}

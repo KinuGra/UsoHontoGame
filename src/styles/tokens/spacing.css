@@ -1,0 +1,107 @@
+/**
+ * Spacing Design Tokens
+ * Feature: 009-apple-hig-ui-redesign
+ * 8px grid system based on Apple's Human Interface Guidelines
+ */
+
+:root {
+  /* Base Spacing Scale (8px grid, with 4px half-step) */
+  --spacing-0: 0px;
+  --spacing-xs: 4px; /* 0.5 * 8px */
+  --spacing-sm: 8px; /* 1 * 8px */
+  --spacing-md: 16px; /* 2 * 8px */
+  --spacing-lg: 24px; /* 3 * 8px */
+  --spacing-xl: 32px; /* 4 * 8px */
+  --spacing-2xl: 48px; /* 6 * 8px */
+  --spacing-3xl: 64px; /* 8 * 8px */
+
+  /* Component-specific Spacing - Buttons */
+  --spacing-button-sm: 8px 12px; /* Vertical: 8px, Horizontal: 12px */
+  --spacing-button-md: 12px 16px; /* Vertical: 12px, Horizontal: 16px */
+  --spacing-button-lg: 16px 24px; /* Vertical: 16px, Horizontal: 24px */
+
+  /* Component-specific Spacing - Cards */
+  --spacing-card-sm: 12px;
+  --spacing-card-md: 16px;
+  --spacing-card-lg: 24px;
+
+  /* Component-specific Spacing - Inputs */
+  --spacing-input-sm: 8px;
+  --spacing-input-md: 12px;
+  --spacing-input-lg: 16px;
+
+  /* Component-specific Spacing - Modal/Dialog */
+  --spacing-modal-padding: 24px;
+  --spacing-modal-gap: 16px;
+
+  /* Layout Spacing */
+  --spacing-section: 48px; /* Between major sections */
+  --spacing-page: 24px; /* Page padding */
+  --spacing-stack: 16px; /* Vertical stack spacing */
+  --spacing-inline: 8px; /* Horizontal inline spacing */
+
+  /* Container Max Widths */
+  --container-sm: 640px; /* Small containers (forms, etc.) */
+  --container-md: 768px; /* Medium containers */
+  --container-lg: 1024px; /* Large containers */
+  --container-xl: 1280px; /* Extra large containers */
+  --container-2xl: 1440px; /* Maximum content width */
+
+  /* Gap Values (for flexbox/grid) */
+  --gap-xs: 4px;
+  --gap-sm: 8px;
+  --gap-md: 16px;
+  --gap-lg: 24px;
+  --gap-xl: 32px;
+
+  /* Border Spacing */
+  --spacing-border-sm: 2px;
+  --spacing-border-md: 4px;
+  --spacing-border-lg: 8px;
+
+  /* Icon Spacing */
+  --spacing-icon-sm: 16px; /* Small icon size */
+  --spacing-icon-md: 24px; /* Medium icon size */
+  --spacing-icon-lg: 32px; /* Large icon size */
+  --spacing-icon-xl: 48px; /* Extra large icon size */
+
+  /* List Item Spacing */
+  --spacing-list-item: 12px;
+  --spacing-list-gap: 8px;
+
+  /* Header/Navigation Spacing */
+  --spacing-header-height: 56px;
+  --spacing-nav-item: 16px;
+
+  /* Form Field Spacing */
+  --spacing-field-gap: 16px;
+  --spacing-label-gap: 8px;
+}
+
+/* Responsive Spacing Adjustments */
+
+/* Mobile (< 768px) - Tighter spacing */
+@media (max-width: 767px) {
+  :root {
+    --spacing-page: 16px;
+    --spacing-section: 32px;
+    --spacing-modal-padding: 16px;
+  }
+}
+
+/* Tablet (768px - 1023px) - Default spacing */
+@media (min-width: 768px) and (max-width: 1023px) {
+  :root {
+    --spacing-page: 20px;
+    --spacing-section: 40px;
+  }
+}
+
+/* Desktop (≥ 1024px) - More generous spacing */
+@media (min-width: 1024px) {
+  :root {
+    --spacing-page: 24px;
+    --spacing-section: 48px;
+    --spacing-modal-padding: 32px;
+  }
+}

@@ -2,7 +2,7 @@
 // UI Primitive component for card container layout
 
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { Card } from './Card';
 
 describe('Card', () => {
@@ -355,6 +355,251 @@ describe('Card', () => {
 
       const card = container.querySelector('div');
       expect(card).toHaveClass('p-8', 'm-4');
+    });
+  });
+
+  describe('Variants (Feature: 009-apple-hig-ui-redesign)', () => {
+    it('should render default variant', () => {
+      const { container } = render(<Card variant="default">Default Card</Card>);
+
+      const card = container.querySelector('div');
+      expect(card).toHaveClass('card-default', 'border', 'border-gray-200', 'shadow-sm');
+    });
+
+    it('should render elevated variant', () => {
+      const { container } = render(<Card variant="elevated">Elevated Card</Card>);
+
+      const card = container.querySelector('div');
+      expect(card).toHaveClass('card-elevated', 'shadow-md');
+    });
+
+    it('should render outlined variant', () => {
+      const { container } = render(<Card variant="outlined">Outlined Card</Card>);
+
+      const card = container.querySelector('div');
+      expect(card).toHaveClass('card-outlined', 'border-2', 'border-gray-300');
+    });
+
+    it('should render filled variant', () => {
+      const { container } = render(<Card variant="filled">Filled Card</Card>);
+
+      const card = container.querySelector('div');
+      expect(card).toHaveClass('card-filled', 'bg-gray-50');
+    });
+
+    it('should use default variant when not specified', () => {
+      const { container } = render(<Card>No Variant</Card>);
+
+      const card = container.querySelector('div');
+      expect(card).toHaveClass('card-default');
+    });
+  });
+
+  describe('Interactive State (Feature: 009-apple-hig-ui-redesign)', () => {
+    it('should render non-interactive card by default', () => {
+      const { container } = render(<Card>Non-Interactive</Card>);
+
+      const card = container.querySelector('div');
+      expect(card).not.toHaveClass('card-interactive');
+      expect(card).not.toHaveClass('cursor-pointer');
+    });
+
+    it('should render interactive card when interactive prop is true', () => {
+      const { container } = render(<Card interactive>Interactive Card</Card>);
+
+      const card = container.querySelector('div');
+      expect(card).toHaveClass('card-interactive', 'cursor-pointer');
+    });
+
+    it('should have hover scale on interactive cards', () => {
+      const { container } = render(<Card interactive>Hover Me</Card>);
+
+      const card = container.querySelector('div');
+      expect(card).toHaveClass('hover:scale-[1.02]');
+    });
+
+    it('should have active scale on interactive cards', () => {
+      const { container } = render(<Card interactive>Click Me</Card>);
+
+      const card = container.querySelector('div');
+      expect(card).toHaveClass('active:scale-[0.98]');
+    });
+
+    it('should have focus ring on interactive cards', () => {
+      const { container } = render(<Card interactive>Focus Me</Card>);
+
+      const card = container.querySelector('div');
+      expect(card).toHaveClass('focus-within:ring-2', 'focus-within:ring-blue-500');
+    });
+  });
+
+  describe('Padding Variants (Feature: 009-apple-hig-ui-redesign)', () => {
+    it('should apply no padding when padding="none"', () => {
+      const { container } = render(<Card padding="none">No Padding</Card>);
+
+      const card = container.querySelector('div');
+      expect(card).not.toHaveClass('p-3');
+      expect(card).not.toHaveClass('p-6');
+      expect(card).not.toHaveClass('p-8');
+    });
+
+    it('should apply small padding when padding="sm"', () => {
+      const { container } = render(<Card padding="sm">Small Padding</Card>);
+
+      const card = container.querySelector('div');
+      expect(card).toHaveClass('p-3');
+    });
+
+    it('should apply medium padding by default', () => {
+      const { container } = render(<Card>Default Padding</Card>);
+
+      const card = container.querySelector('div');
+      expect(card).toHaveClass('p-6');
+    });
+
+    it('should apply medium padding when padding="md"', () => {
+      const { container } = render(<Card padding="md">Medium Padding</Card>);
+
+      const card = container.querySelector('div');
+      expect(card).toHaveClass('p-6');
+    });
+
+    it('should apply large padding when padding="lg"', () => {
+      const { container } = render(<Card padding="lg">Large Padding</Card>);
+
+      const card = container.querySelector('div');
+      expect(card).toHaveClass('p-8');
+    });
+  });
+
+  describe('Dark Mode Support (Feature: 009-apple-hig-ui-redesign)', () => {
+    it('should have dark mode background classes', () => {
+      const { container } = render(<Card>Dark Mode</Card>);
+
+      const card = container.querySelector('div');
+      expect(card).toHaveClass('bg-white', 'dark:bg-gray-800');
+    });
+
+    it('should have dark mode border for default variant', () => {
+      const { container } = render(<Card variant="default">Dark Border</Card>);
+
+      const card = container.querySelector('div');
+      expect(card).toHaveClass('border-gray-200', 'dark:border-gray-700');
+    });
+
+    it('should have dark mode border for outlined variant', () => {
+      const { container } = render(<Card variant="outlined">Dark Outlined</Card>);
+
+      const card = container.querySelector('div');
+      expect(card).toHaveClass('border-gray-300', 'dark:border-gray-600');
+    });
+
+    it('should have dark mode background for filled variant', () => {
+      const { container } = render(<Card variant="filled">Dark Filled</Card>);
+
+      const card = container.querySelector('div');
+      expect(card).toHaveClass('bg-gray-50', 'dark:bg-gray-900');
+    });
+  });
+
+  describe('Enhanced Base Styles (Feature: 009-apple-hig-ui-redesign)', () => {
+    it('should have card-base class', () => {
+      const { container } = render(<Card>Base</Card>);
+
+      const card = container.querySelector('div');
+      expect(card).toHaveClass('card-base');
+    });
+
+    it('should have rounded corners', () => {
+      const { container } = render(<Card>Rounded</Card>);
+
+      const card = container.querySelector('div');
+      expect(card).toHaveClass('rounded-lg');
+    });
+
+    it('should have smooth transitions', () => {
+      const { container } = render(<Card>Animated</Card>);
+
+      const card = container.querySelector('div');
+      expect(card).toHaveClass('transition-all', 'duration-200', 'ease-out');
+    });
+  });
+
+  describe('Combined Features (Feature: 009-apple-hig-ui-redesign)', () => {
+    it('should combine variant and interactive', () => {
+      const { container } = render(
+        <Card variant="elevated" interactive>
+          Elevated Interactive
+        </Card>
+      );
+
+      const card = container.querySelector('div');
+      expect(card).toHaveClass('card-elevated', 'card-interactive');
+    });
+
+    it('should combine variant, padding, and interactive', () => {
+      const { container } = render(
+        <Card variant="outlined" padding="lg" interactive>
+          All Props
+        </Card>
+      );
+
+      const card = container.querySelector('div');
+      expect(card).toHaveClass('card-outlined', 'p-8', 'card-interactive');
+    });
+
+    it('should combine variant, padding, interactive, and custom className', () => {
+      const { container } = render(
+        <Card variant="filled" padding="sm" interactive className="custom-class">
+          Everything
+        </Card>
+      );
+
+      const card = container.querySelector('div');
+      expect(card).toHaveClass('card-filled', 'p-3', 'card-interactive', 'custom-class');
+    });
+
+    it('should maintain backward compatibility with className only', () => {
+      const { container } = render(<Card className="custom-padding">Legacy</Card>);
+
+      const card = container.querySelector('div');
+      expect(card).toHaveClass('card-default', 'p-6', 'custom-padding');
+    });
+  });
+
+  describe('HTML Attributes (Feature: 009-apple-hig-ui-redesign)', () => {
+    it('should accept and apply onClick handler', () => {
+      const handleClick = vi.fn();
+      const { container } = render(
+        <Card interactive onClick={handleClick}>
+          Clickable
+        </Card>
+      );
+
+      const card = container.querySelector('div');
+      card?.click();
+
+      expect(handleClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('should accept and apply data attributes', () => {
+      const { container } = render(<Card data-testid="my-card">Data Attrs</Card>);
+
+      expect(screen.getByTestId('my-card')).toBeInTheDocument();
+    });
+
+    it('should accept and apply aria attributes', () => {
+      const { container } = render(<Card aria-label="Game card">Aria</Card>);
+
+      const card = container.querySelector('div');
+      expect(card).toHaveAttribute('aria-label', 'Game card');
+    });
+
+    it('should accept and apply id attribute', () => {
+      const { container } = render(<Card id="unique-card">ID</Card>);
+
+      const card = container.querySelector('div');
+      expect(card).toHaveAttribute('id', 'unique-card');
     });
   });
 });

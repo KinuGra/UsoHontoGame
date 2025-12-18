@@ -1,0 +1,82 @@
+/**
+ * Border Design Tokens
+ * Feature: 009-apple-hig-ui-redesign
+ * Border system based on Apple's Human Interface Guidelines
+ */
+
+:root {
+  /* Border Radius - Apple HIG uses gentle curves */
+  --border-radius-none: 0px;
+  --border-radius-sm: 4px; /* Subtle rounding */
+  --border-radius-md: 8px; /* Standard rounding */
+  --border-radius-lg: 12px; /* Prominent rounding */
+  --border-radius-xl: 16px; /* Maximum rounding for containers */
+  --border-radius-full: 9999px; /* Circular (for avatars, badges) */
+
+  /* Border Widths */
+  --border-width-none: 0px;
+  --border-width-thin: 1px; /* Standard borders */
+  --border-width-medium: 2px; /* Emphasized borders */
+  --border-width-thick: 4px; /* Strong borders (rare) */
+
+  /* Component-specific Border Radius */
+  --border-radius-button: 8px; /* Buttons */
+  --border-radius-card: 12px; /* Cards, panels */
+  --border-radius-input: 8px; /* Input fields */
+  --border-radius-modal: 16px; /* Modals, dialogs */
+  --border-radius-badge: 9999px; /* Badges (fully rounded) */
+  --border-radius-avatar: 9999px; /* Avatars (circular) */
+  --border-radius-tooltip: 6px; /* Tooltips */
+
+  /* Focus Ring */
+  --border-width-focus: 2px; /* Focus indicator width */
+  --border-focus-offset: 2px; /* Space between element and focus ring */
+
+  /* Border Styles (for reference) */
+  --border-style-solid: solid;
+  --border-style-dashed: dashed;
+  --border-style-dotted: dotted;
+  --border-style-none: none;
+}
+
+/* Responsive Border Adjustments */
+
+/* Mobile (< 768px) - Slightly smaller radius for compact UI */
+@media (max-width: 767px) {
+  :root {
+    --border-radius-card: 10px;
+    --border-radius-modal: 14px;
+  }
+}
+
+/* Tablet (768px - 1023px) - Default values */
+@media (min-width: 768px) and (max-width: 1023px) {
+  :root {
+    /* Default values maintained */
+  }
+}
+
+/* Desktop (≥ 1024px) - Full scale */
+@media (min-width: 1024px) {
+  :root {
+    /* Default values maintained */
+  }
+}
+
+/* Accessibility: High Contrast Mode */
+@media (prefers-contrast: high) {
+  :root {
+    /* Stronger borders for better visibility */
+    --border-width-thin: 2px;
+    --border-width-medium: 3px;
+    --border-width-thick: 5px;
+    --border-width-focus: 3px; /* More prominent focus indicator */
+  }
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    /* Borders are static, no changes needed */
+  }
+}

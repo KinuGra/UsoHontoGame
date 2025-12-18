@@ -1,0 +1,93 @@
+/**
+ * Shadow Design Tokens
+ * Feature: 009-apple-hig-ui-redesign
+ * Elevation system based on Apple's Human Interface Guidelines
+ */
+
+/* Light Mode (Default) */
+:root {
+  /* Base Elevation Levels */
+  --shadow-none: none;
+
+  /* Subtle elevation - for subtle depth */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+  /* Standard elevation - for cards, buttons */
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+  /* Prominent elevation - for floating elements */
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+  /* Maximum elevation - for modals, dialogs */
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /* Component-specific Shadows */
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+  --shadow-button: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+
+  --shadow-modal: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+
+  --shadow-dropdown: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+  /* Focus and Interactive Shadows */
+  --shadow-focus: 0 0 0 3px rgba(0, 122, 255, 0.25); /* Apple Blue with transparency */
+
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+
+  /* Colored Shadows (for hover states, accents) */
+  --shadow-primary: 0 4px 12px rgba(0, 122, 255, 0.3);
+  --shadow-success: 0 4px 12px rgba(52, 199, 89, 0.3);
+  --shadow-error: 0 4px 12px rgba(255, 59, 48, 0.3);
+  --shadow-warning: 0 4px 12px rgba(255, 149, 0, 0.3);
+}
+
+/* Dark Mode */
+[data-theme="dark"] {
+  /* Adjusted shadows for dark mode - more subtle, use lighter colors for contrast */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
+
+  /* Component-specific shadows for dark mode */
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+
+  --shadow-button: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+
+  --shadow-modal: 0 20px 25px -5px rgba(0, 0, 0, 0.7), 0 10px 10px -5px rgba(0, 0, 0, 0.6);
+
+  --shadow-dropdown: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+
+  /* Focus ring for dark mode - brighter for visibility */
+  --shadow-focus: 0 0 0 3px rgba(10, 132, 255, 0.4);
+
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.4);
+
+  /* Colored shadows for dark mode */
+  --shadow-primary: 0 4px 12px rgba(10, 132, 255, 0.4);
+  --shadow-success: 0 4px 12px rgba(48, 209, 88, 0.4);
+  --shadow-error: 0 4px 12px rgba(255, 69, 58, 0.4);
+  --shadow-warning: 0 4px 12px rgba(255, 159, 10, 0.4);
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    /* Maintain shadows even with reduced motion
+       (shadows provide visual hierarchy, not motion) */
+  }
+}
+
+/* High Contrast Mode - Stronger shadows for better depth perception */
+@media (prefers-contrast: high) {
+  :root {
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.15);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.15);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.25), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.25);
+  }
+}
