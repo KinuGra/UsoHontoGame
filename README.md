@@ -53,6 +53,8 @@ A truth-or-lie guessing game built with Next.js 16, React 19, and SQLite. Player
 - **E2E Tests**: Playwright 1.56.1
 - **Component Testing**: Testing Library
 
+⚠️ **Known Issue**: Tests are currently failing due to lack of maintenance.
+
 ### Code Quality
 
 - **Linting**: Biome 2.3.4, ESLint 9
@@ -178,7 +180,7 @@ npm start            # Start production server
 ```
 
 ### Testing
-
+⚠️ **Known Issue**: Tests are currently failing due to lack of maintenance.
 ```bash
 npm test                   # Run unit tests with Vitest
 npm run test:ui            # Run tests with interactive UI
