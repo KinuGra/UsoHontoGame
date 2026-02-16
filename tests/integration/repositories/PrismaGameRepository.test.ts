@@ -960,7 +960,7 @@ describe('PrismaGameRepository', () => {
         const gameWithNullName = result.games.find(
           (g) => g.id === '550e8400-e29b-41d4-a716-446655440299'
         );
-        expect(gameWithNullName?.title).toBe('Untitled Game');
+        expect(gameWithNullName?.title).toBe('550e8400-e29b-41d4-a716-446655440299');
       });
     });
 
@@ -1069,7 +1069,7 @@ describe('PrismaGameRepository', () => {
         const gameWithNullName = result.games.find(
           (g) => g.id === '550e8400-e29b-41d4-a716-446655440298'
         );
-        expect(gameWithNullName?.title).toBe('Untitled Game');
+        expect(gameWithNullName?.title).toBe('550e8400-e29b-41d4-a716-446655440298');
       });
     });
   });

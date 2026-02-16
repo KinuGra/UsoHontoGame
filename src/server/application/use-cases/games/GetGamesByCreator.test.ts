@@ -295,4 +295,29 @@ describe('GetGamesByCreator', () => {
     // Then: Should return all 5 games
     expect(result.games).toHaveLength(5);
   });
+
+  it('should use game ID as name when name is null', async () => {
+    // Given: Game with null name
+    const creatorId = 'creator-session-123';
+    const gameId = '550e8400-e29b-41d4-a716-446655440001';
+    const game = new Game(
+      new GameId(gameId),
+      null, // Null name
+      new GameStatus('準備中'),
+      10,
+      0,
+      new Date(),
+      new Date(),
+      creatorId
+    );
+
+    await repository.create(game);
+
+    // When: Getting games
+    const result = await useCase.execute({ creatorId });
+
+    // Then: Should use game ID as name
+    expect(result.games).toHaveLength(1);
+    expect(result.games[0].name).toBe(gameId);
+  });
 });

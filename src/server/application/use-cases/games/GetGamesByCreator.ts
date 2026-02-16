@@ -43,7 +43,7 @@ export class GetGamesByCreator {
     // Map to GameManagementDto
     const gameDtos: GameManagementDto[] = games.map((game) => ({
       id: game.id.toString(),
-      name: game.name,
+      name: game.name || game.id.toString(),
       status: game.status.toString(),
       maxPlayers: game.maxPlayers,
       currentPlayers: game.currentPlayers,

@@ -392,7 +392,7 @@ export class PrismaGameRepository implements IGameRepository {
     return {
       games: games.map((game) => ({
         id: game.id,
-        title: game.name || 'Untitled Game',
+        title: game.name || game.id,
         createdAt: game.createdAt,
         playerCount: game._count.participations, // Use actual participation count
         playerLimit: game.maxPlayers,
@@ -451,7 +451,7 @@ export class PrismaGameRepository implements IGameRepository {
     return {
       games: games.map((game) => ({
         id: game.id,
-        title: game.name || 'Untitled Game',
+        title: game.name || game.id,
         createdAt: game.createdAt,
         playerCount: game._count.participations,
         playerLimit: game.maxPlayers,
