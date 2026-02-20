@@ -2,12 +2,12 @@
 // Provides Application Service instances with singleton pattern
 // Unifies service lifecycle management across the application
 
-import type { AnswerApplicationService } from '@/server/application/services/AnswerApplicationService';
-import type { GameApplicationService } from '@/server/application/services/GameApplicationService';
-import type { PresenterApplicationService } from '@/server/application/services/PresenterApplicationService';
-import type { ResultsApplicationService } from '@/server/application/services/ResultsApplicationService';
-import type { SessionApplicationService } from '@/server/application/services/SessionApplicationService';
-import type { DashboardApplicationService } from '@/server/application/services/DashboardApplicationService';
+import { AnswerApplicationService } from '@/server/application/services/AnswerApplicationService';
+import { GameApplicationService } from '@/server/application/services/GameApplicationService';
+import { PresenterApplicationService } from '@/server/application/services/PresenterApplicationService';
+import { ResultsApplicationService } from '@/server/application/services/ResultsApplicationService';
+import { SessionApplicationService } from '@/server/application/services/SessionApplicationService';
+import { DashboardApplicationService } from '@/server/application/services/DashboardApplicationService';
 
 /**
  * Service Dependency Injection Container
@@ -23,9 +23,7 @@ export class ServiceContainer {
    */
   static getGameService(): GameApplicationService {
     if (!this.instances.has('game')) {
-      // Lazy import to avoid circular dependencies
-      const { GameApplicationService: Service } = require('@/server/application/services/GameApplicationService');
-      this.instances.set('game', new Service());
+      this.instances.set('game', new GameApplicationService());
     }
     return this.instances.get('game') as GameApplicationService;
   }
@@ -35,8 +33,7 @@ export class ServiceContainer {
    */
   static getAnswerService(): AnswerApplicationService {
     if (!this.instances.has('answer')) {
-      const { AnswerApplicationService: Service } = require('@/server/application/services/AnswerApplicationService');
-      this.instances.set('answer', new Service());
+      this.instances.set('answer', new AnswerApplicationService());
     }
     return this.instances.get('answer') as AnswerApplicationService;
   }
@@ -46,8 +43,7 @@ export class ServiceContainer {
    */
   static getPresenterService(): PresenterApplicationService {
     if (!this.instances.has('presenter')) {
-      const { PresenterApplicationService: Service } = require('@/server/application/services/PresenterApplicationService');
-      this.instances.set('presenter', new Service());
+      this.instances.set('presenter', new PresenterApplicationService());
     }
     return this.instances.get('presenter') as PresenterApplicationService;
   }
@@ -57,8 +53,7 @@ export class ServiceContainer {
    */
   static getResultsService(): ResultsApplicationService {
     if (!this.instances.has('results')) {
-      const { ResultsApplicationService: Service } = require('@/server/application/services/ResultsApplicationService');
-      this.instances.set('results', new Service());
+      this.instances.set('results', new ResultsApplicationService());
     }
     return this.instances.get('results') as ResultsApplicationService;
   }
@@ -68,8 +63,7 @@ export class ServiceContainer {
    */
   static getSessionService(): SessionApplicationService {
     if (!this.instances.has('session')) {
-      const { SessionApplicationService: Service } = require('@/server/application/services/SessionApplicationService');
-      this.instances.set('session', new Service());
+      this.instances.set('session', new SessionApplicationService());
     }
     return this.instances.get('session') as SessionApplicationService;
   }
@@ -79,8 +73,7 @@ export class ServiceContainer {
    */
   static getDashboardService(): DashboardApplicationService {
     if (!this.instances.has('dashboard')) {
-      const { DashboardApplicationService: Service } = require('@/server/application/services/DashboardApplicationService');
-      this.instances.set('dashboard', new Service());
+      this.instances.set('dashboard', new DashboardApplicationService());
     }
     return this.instances.get('dashboard') as DashboardApplicationService;
   }
