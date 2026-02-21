@@ -75,8 +75,7 @@ export class AnswerApplicationService {
 
     try {
       // 2. セッション取得
-      const sessionService = SessionServiceContainer.getSessionService();
-      const sessionId = await sessionService.requireCurrentSession();
+      const sessionId = await SessionServiceContainer.requireCurrentSession();
 
       // 3. ValidateSessionでニックネームも取得
       const validateUseCase = new ValidateSession(this.sessionRepository);

@@ -29,8 +29,7 @@ export class ResultsApplicationService {
    */
   async getResults(gameId: string): Promise<ServiceResponse<RankingDto>> {
     try {
-      const sessionService = SessionServiceContainer.getSessionService();
-      await sessionService.requireCurrentSession();
+      await SessionServiceContainer.requireCurrentSession();
 
       const useCase = new GetResults(this.gameRepository, this.answerRepository);
       const result = await useCase.execute(gameId);

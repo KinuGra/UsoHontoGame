@@ -56,8 +56,7 @@ export class GameApplicationService {
 
     try {
       // 2. セッション取得
-      const sessionService = SessionServiceContainer.getSessionService();
-      const sessionId = await sessionService.requireCurrentSession();
+      const sessionId = await SessionServiceContainer.requireCurrentSession();
 
       // 3. UseCase準備
       const useCase = new CreateGame(this.gameRepository);
@@ -95,8 +94,7 @@ export class GameApplicationService {
 
     try {
       // 2. セッション取得
-      const sessionService = SessionServiceContainer.getSessionService();
-      const sessionId = await sessionService.requireCurrentSession();
+      const sessionId = await SessionServiceContainer.requireCurrentSession();
 
       // 3. UseCase準備
       const useCase = new UpdateGameSettings(this.gameRepository);
@@ -142,8 +140,7 @@ export class GameApplicationService {
 
     try {
       // 2. セッション取得
-      const sessionService = SessionServiceContainer.getSessionService();
-      const sessionId = await sessionService.requireCurrentSession();
+      const sessionId = await SessionServiceContainer.requireCurrentSession();
 
       // 3. UseCase準備
       const useCase = new DeleteGame(this.gameRepository);
@@ -167,8 +164,7 @@ export class GameApplicationService {
   async getGamesByCreator(): Promise<ServiceResponse<GameManagementDto[]>> {
     try {
       // 1. セッション取得
-      const sessionService = SessionServiceContainer.getSessionService();
-      const sessionId = await sessionService.requireCurrentSession();
+      const sessionId = await SessionServiceContainer.requireCurrentSession();
 
       // 2. UseCase準備
       const useCase = new GetGamesByCreator(this.gameRepository);
@@ -195,8 +191,7 @@ export class GameApplicationService {
   async getGameDetail(gameId: string): Promise<ServiceResponse<GameDetailDto>> {
     try {
       // 1. セッション取得
-      const sessionService = SessionServiceContainer.getSessionService();
-      const sessionId = await sessionService.requireCurrentSession();
+      const sessionId = await SessionServiceContainer.requireCurrentSession();
 
       // 2. リポジトリから直接取得（認可チェック込み）
       const game = await this.gameRepository.findById(new GameId(gameId));
@@ -255,8 +250,7 @@ export class GameApplicationService {
 
     try {
       // 2. セッション取得
-      const sessionService = SessionServiceContainer.getSessionService();
-      const sessionId = await sessionService.requireCurrentSession();
+      const sessionId = await SessionServiceContainer.requireCurrentSession();
 
       // 3. ステータス遷移検証
       const validateUseCase = new ValidateStatusTransition(this.gameRepository);
@@ -302,8 +296,7 @@ export class GameApplicationService {
 
     try {
       // 2. セッション取得
-      const sessionService = SessionServiceContainer.getSessionService();
-      const sessionId = await sessionService.requireCurrentSession();
+      const sessionId = await SessionServiceContainer.requireCurrentSession();
 
       // 3. ステータス遷移検証
       const validateUseCase = new ValidateStatusTransition(this.gameRepository);
@@ -349,8 +342,7 @@ export class GameApplicationService {
 
     try {
       // 2. セッション取得（認可用、現在は使用していないが将来のため）
-      const sessionService = SessionServiceContainer.getSessionService();
-      await sessionService.requireCurrentSession();
+      await SessionServiceContainer.requireCurrentSession();
 
       // 3. UseCase準備
       const useCase = new StartAcceptingResponses(this.gameRepository);

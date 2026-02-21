@@ -29,8 +29,7 @@ export class DashboardApplicationService {
    */
   async getResponseStatus(gameId: string): Promise<ServiceResponse<ResponseStatusDto>> {
     try {
-      const sessionService = SessionServiceContainer.getSessionService();
-      await sessionService.requireCurrentSession();
+      await SessionServiceContainer.requireCurrentSession();
 
       const useCase = new GetResponseStatus(this.gameRepository, this.answerRepository);
       const result = await useCase.execute(gameId);

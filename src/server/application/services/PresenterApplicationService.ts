@@ -37,8 +37,7 @@ export class PresenterApplicationService {
   }): Promise<ServiceResponse<PresenterWithLieDto>> {
     try {
       // 1. セッション取得
-      const sessionService = SessionServiceContainer.getSessionService();
-      await sessionService.requireCurrentSession();
+      await SessionServiceContainer.requireCurrentSession();
 
       // 2. UseCase準備
       const useCase = new AddPresenter(this.gameRepository);
@@ -70,8 +69,7 @@ export class PresenterApplicationService {
   }): Promise<ServiceResponse<PresenterWithLieDto>> {
     try {
       // 1. セッション取得
-      const sessionService = SessionServiceContainer.getSessionService();
-      await sessionService.requireCurrentSession();
+      await SessionServiceContainer.requireCurrentSession();
 
       // 2. UseCase準備
       const useCase = new AddPresenterWithEpisodes(this.gameRepository);
@@ -103,8 +101,7 @@ export class PresenterApplicationService {
   }): Promise<ServiceVoidResponse> {
     try {
       // 1. セッション取得
-      const sessionService = SessionServiceContainer.getSessionService();
-      await sessionService.requireCurrentSession();
+      await SessionServiceContainer.requireCurrentSession();
 
       // 2. UseCase準備
       const useCase = new RemovePresenter(this.gameRepository);
@@ -133,8 +130,7 @@ export class PresenterApplicationService {
   }): Promise<ServiceResponse<EpisodeWithLieDto>> {
     try {
       // 1. セッション取得
-      const sessionService = SessionServiceContainer.getSessionService();
-      await sessionService.requireCurrentSession();
+      await SessionServiceContainer.requireCurrentSession();
 
       // 2. UseCase準備
       const useCase = new AddEpisode(this.gameRepository);
@@ -164,8 +160,7 @@ export class PresenterApplicationService {
     gameId: string
   ): Promise<ServiceResponse<{ presenters: PresenterWithLieDto[] }>> {
     try {
-      const sessionService = SessionServiceContainer.getSessionService();
-      const sessionId = await sessionService.requireCurrentSession();
+      const sessionId = await SessionServiceContainer.requireCurrentSession();
 
       const useCase = new GetPresentersByGameId(this.gameRepository);
       const result = await useCase.execute({ gameId, requesterId: sessionId });
@@ -185,8 +180,7 @@ export class PresenterApplicationService {
     presenterId: string
   ): Promise<ServiceResponse<{ presenter: PresenterWithLieDto }>> {
     try {
-      const sessionService = SessionServiceContainer.getSessionService();
-      const sessionId = await sessionService.requireCurrentSession();
+      const sessionId = await SessionServiceContainer.requireCurrentSession();
 
       const useCase = new GetPresenterEpisodes(this.gameRepository);
       const result = await useCase.execute({ presenterId, requesterId: sessionId });

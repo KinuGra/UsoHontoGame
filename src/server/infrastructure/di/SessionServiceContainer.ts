@@ -29,6 +29,14 @@ export class SessionServiceContainer {
   }
 
   /**
+   * Convenience: requires a valid session and returns the session ID.
+   * Throws if no session exists (delegates to ISessionService.requireCurrentSession).
+   */
+  static async requireCurrentSession(): Promise<string> {
+    return SessionServiceContainer.getSessionService().requireCurrentSession();
+  }
+
+  /**
    * Gets session repository instance (singleton)
    */
   static getSessionRepository(): ISessionRepository {
