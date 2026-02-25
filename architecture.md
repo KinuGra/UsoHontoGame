@@ -2,7 +2,7 @@
 
 このドキュメントでは、UsoHontoGameプロジェクトのアーキテクチャ設計思想とパターンを説明します。
 
-技術スタック、ディレクトリ構造、コマンドなどの詳細は[README.md](./README.md)を参照してください。
+b コマンドや環境セットアップの詳細は[README.md](./README.md)を参照してください。
 
 ---
 
@@ -60,6 +60,47 @@
 │ - データベースアクセス                           │
 │ - 外部API統合                                    │
 └─────────────────────────────────────────────────┘
+```
+
+---
+
+## プロジェクト構造
+
+```
+.
+├── src/
+│   ├── app/                        # Next.js App Router
+│   │   ├── actions/                # サーバーアクション
+│   │   ├── api/                    # APIルート
+│   │   ├── games/                  # ゲームページ
+│   │   │   ├── [id]/
+│   │   │   │   ├── answer/         # 回答送信ページ
+│   │   │   │   ├── dashboard/      # ダッシュボード
+│   │   │   │   ├── presenters/     # 出題者管理
+│   │   │   │   └── results/        # 結果表示
+│   │   │   ├── create/             # ゲーム作成
+│   │   │   └── page.tsx            # ゲーム一覧
+│   │   └── page.tsx                # TOP（セッション）
+│   ├── components/
+│   │   ├── domain/                 # ドメインコンポーネント
+│   │   ├── pages/                  # ページコンポーネント
+│   │   └── ui/                     # 再利用可能なUI
+│   ├── hooks/                      # カスタムReactフック
+│   ├── lib/                        # ユーティリティ
+│   ├── server/
+│   │   ├── application/            # ユースケース・DTO
+│   │   ├── domain/                 # ドメイン層
+│   │   └── infrastructure/         # 外部依存関係
+│   └── types/                      # TypeScript型定義
+├── tests/
+│   ├── e2e/                        # Playwright E2Eテスト
+│   ├── integration/                # 統合テスト
+│   └── utils/                      # テストユーティリティ
+├── prisma/
+│   ├── schema.prisma               # データベーススキーマ
+│   ├── migrations/                 # マイグレーションファイル
+│   └── dev.db                      # SQLiteデータベース
+└── specs/                          # 機能仕様
 ```
 
 ---
@@ -331,3 +372,64 @@ export class SessionServiceContainer {
 ```
 
 ---
+
+## データベーススキーマ
+
+```prisma
+model Game {
+  id              String          @id @default(uuid())
+  name            String?
+  creatorId       String
+  maxPlayers      Int
+  currentPlayers  Int             @default(0)
+  status          String          @default("準備中")
+  presenters      Presenter[]
+  answers         Answer[]
+  participations  Participation[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model Presenter {
+  id        String    @id @default(uuid())
+  gameId    String
+  nickname  String
+  episodes  Episode[]
+  game      Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+}
+
+model Episode {
+  id          String    @id @default(uuid())
+  presenterId String
+  text        String
+  isLie       Boolean
+  presenter   Presenter @relation(fields: [presenterId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+}
+
+model Answer {
+  id         String   @id @default(uuid())
+  sessionId  String
+  gameId     String
+  nickname   String
+  selections Json
+  game       Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([sessionId, gameId])
+}
+
+model Participation {
+  id        String   @id @default(uuid())
+  sessionId String
+  gameId    String
+  nickname  String
+  joinedAt  DateTime @default(now())
+  game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, gameId])
+}
+```
+

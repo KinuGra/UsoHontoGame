@@ -2,11 +2,12 @@
 
 Next.js 16、React 19、SQLiteを使った真偽判定ゲーム。プレイヤーは3つのエピソードの中から嘘のエピソードを当てます。
 
-## 開発チャレンジ課題
+## ドキュメント
 
-このプロジェクトには、学習用の開発チャレンジ課題が用意されています。
-
-📝 **[課題一覧を見る（challenge-problems.md）](./challenge-problems.md)**
+| ドキュメント | 内容 |
+|---|---|
+| 📐 **[architecture.md](./architecture.md)** | アーキテクチャ設計・層構造・パターン・プロジェクト構造・DBスキーマ |
+| 📝 **[challenge-problems.md](./challenge-problems.md)** | チャレンジ課題一覧 |
 
 ## クイックスタート
 
@@ -125,125 +126,6 @@ npm run dev
 #### コード品質
 - **リント・フォーマット**: Biome 2.3.4、ESLint 9
 
-### アーキテクチャ
-
-**クリーンアーキテクチャ** + **ドメイン駆動設計**
-
-```
-src/
-├── app/                    # Next.jsページ（プレゼンテーション層）
-├── components/             # Reactコンポーネント（プレゼンテーション層）
-└── server/
-    ├── application/        # ユースケース（アプリケーション層）
-    ├── domain/             # エンティティ、値オブジェクト（ドメイン層）
-    └── infrastructure/     # データベース、外部API（インフラ層）
-```
-
-**主要パターン**:
-- リポジトリパターン
-- サーバーアクション（Next.js）
-- 値オブジェクト
-- ユースケースパターン
-
-### プロジェクト構造
-
-```
-.
-├── src/
-│   ├── app/                        # Next.js App Router
-│   │   ├── actions/                # サーバーアクション
-│   │   ├── api/                    # APIルート
-│   │   ├── games/                  # ゲームページ
-│   │   │   ├── [id]/
-│   │   │   │   ├── answer/         # 回答送信ページ
-│   │   │   │   ├── dashboard/      # ダッシュボード
-│   │   │   │   ├── presenters/     # 出題者管理
-│   │   │   │   └── results/        # 結果表示
-│   │   │   ├── create/             # ゲーム作成
-│   │   │   └── page.tsx            # ゲーム一覧
-│   │   └── page.tsx                # TOP（セッション）
-│   ├── components/
-│   │   ├── domain/                 # ドメインコンポーネント
-│   │   ├── pages/                  # ページコンポーネント
-│   │   └── ui/                     # 再利用可能なUI
-│   ├── hooks/                      # カスタムReactフック
-│   ├── lib/                        # ユーティリティ
-│   ├── server/
-│   │   ├── application/            # ユースケース・DTO
-│   │   ├── domain/                 # ドメイン層
-│   │   └── infrastructure/         # 外部依存関係
-│   └── types/                      # TypeScript型定義
-├── tests/
-│   ├── e2e/                        # Playwright E2Eテスト
-│   ├── integration/                # 統合テスト
-│   └── utils/                      # テストユーティリティ
-├── prisma/
-│   ├── schema.prisma               # データベーススキーマ
-│   ├── migrations/                 # マイグレーションファイル
-│   └── dev.db                      # SQLiteデータベース
-└── specs/                          # 機能仕様
-```
-
-### データベーススキーマ
-
-```prisma
-model Game {
-  id              String          @id @default(uuid())
-  name            String?
-  creatorId       String
-  maxPlayers      Int
-  currentPlayers  Int             @default(0)
-  status          String          @default("準備中")
-  presenters      Presenter[]
-  answers         Answer[]
-  participations  Participation[]
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-}
-
-model Presenter {
-  id        String    @id @default(uuid())
-  gameId    String
-  nickname  String
-  episodes  Episode[]
-  game      Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  createdAt DateTime  @default(now())
-}
-
-model Episode {
-  id          String    @id @default(uuid())
-  presenterId String
-  text        String
-  isLie       Boolean
-  presenter   Presenter @relation(fields: [presenterId], references: [id], onDelete: Cascade)
-  createdAt   DateTime  @default(now())
-}
-
-model Answer {
-  id         String   @id @default(uuid())
-  sessionId  String
-  gameId     String
-  nickname   String
-  selections Json
-  game       Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  @@unique([sessionId, gameId])
-}
-
-model Participation {
-  id        String   @id @default(uuid())
-  sessionId String
-  gameId    String
-  nickname  String
-  joinedAt  DateTime @default(now())
-  game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
-
-  @@unique([sessionId, gameId])
-}
-```
-
 ## 開発ガイド
 
 ### 利用可能なコマンド
@@ -336,33 +218,6 @@ npm run seed:my <session-id-B>
 3. リポジトリ実装を更新
 4. ドメインエンティティを更新（必要に応じて）
 
-### 開発のヒント
-
-#### セッションIDの確認方法
-
-1. DevTools（F12）を開く
-2. Application → Cookies → `http://localhost:3000`
-3. `sessionId` Cookieの値をコピー
-
-**用途:**
-- `npm run seed:my <session-id>` でテストデータ生成
-- セッション固有の問題をデバッグ
-
-#### 複数ユーザーのテスト
-
-- **通常のブラウザ**: ユーザーA
-- **シークレットモード**: ユーザーB
-
-各ブラウザで独立したセッションを作成できます。
-
-```bash
-# ターミナル1: ユーザーAのゲームをシード
-npm run seed:my <session-id-A>
-
-# ターミナル2: ユーザーBのゲームをシード
-npm run seed:my <session-id-B>
-```
-
 ### 環境変数
 
 `.env`:
@@ -383,6 +238,3 @@ DATABASE_URL="file:/absolute/path/to/prisma/dev.db"
 
 プライベートプロジェクト - All rights reserved
 
-## 謝辞
-
-[Claude Code](https://claude.ai/code)を使用して構築されました
