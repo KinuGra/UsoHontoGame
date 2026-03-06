@@ -20,6 +20,7 @@ model Game {
   maxPlayers      Int             // Maximum number of players (1-100)
   currentPlayers  Int             @default(0) // Current number of registered players
   status          String          @default("準備中") // GameStatus: 準備中, 出題中, 締切
+  favorites Favorite[]
   presenters      Presenter[]     // 0-10 presenters
   answers         Answer[]        // Answer submissions (001-lie-detection-answers)
   participations  Participation[] // Participation tracking (001-lie-detection-answers)
@@ -83,4 +84,16 @@ model Participation {
 
   @@unique([sessionId, gameId]) // One participation record per session per game
   @@index([gameId])
+}
+
+model Favorite {
+  id        String   @id @default(uuid())
+  sessionId String
+  gameId    String
+  createdAt DateTime @default(now())
+
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, gameId])
+  @@index([sessionId])
 }

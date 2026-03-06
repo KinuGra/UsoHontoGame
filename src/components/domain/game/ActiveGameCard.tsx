@@ -19,9 +19,12 @@
 
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/hooks/useLanguage';
 import type { ActiveGameListItem } from '@/types/game';
+import { FaHeart, FaRegHeart } from 'react-icons/fa';
+import { toggleFavorite } from '@/app/actions/favorite';
 
 export interface ActiveGameCardProps {
   /** Game information to display */
@@ -36,6 +39,7 @@ export interface ActiveGameCardProps {
  */
 export function ActiveGameCard({ game, currentSessionId: _currentSessionId }: ActiveGameCardProps) {
   const { t } = useLanguage();
+  const [isFavorite, setIsFavorite] = useState(false);
 
   const playerCountText = game.playerLimit
     ? `${game.playerCount} / ${game.playerLimit}人`
@@ -44,18 +48,34 @@ export function ActiveGameCard({ game, currentSessionId: _currentSessionId }: Ac
   // Check if game is closed by comparing with the actual status value, not translated text
   const isClosed = game.status === '締切';
 
+  const handleFavoriteToggle = async () => {
+    const next = await toggleFavorite(game.id);
+    setIsFavorite(next);
+  };
+
   return (
     <article className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:border-gray-300">
       {/* Game Title and Status Badge */}
       <div className="flex items-start justify-between gap-3 mb-4">
         <h3 className="text-xl font-semibold text-gray-900">{game.title}</h3>
-        <span
-          className={`flex-shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${
-            isClosed ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
-          }`}
-        >
-          {isClosed ? t('game.status.closed') : t('game.status.active')}
-        </span>
+        <div className="flex flex-shrink-0 items-center gap-2">
+          <button
+            type="button"
+            onClick={handleFavoriteToggle}
+            aria-label={isFavorite ? 'お気に入り解除' : 'お気に入り追加'}
+          >
+            {isFavorite ? (
+              <FaHeart className="text-red-500 w-5 h-5" />
+            ) : (
+              <FaRegHeart className="text-gray-400 w-5 h-5" />
+            )}
+          </button>
+          <span
+            className={`rounded-full px-3 py-1 text-xs font-semibold ${isClosed ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`}
+          >
+            {isClosed ? t('game.status.closed') : t('game.status.active')}
+          </span>
+        </div>
       </div>
 
       {/* Game Metadata */}

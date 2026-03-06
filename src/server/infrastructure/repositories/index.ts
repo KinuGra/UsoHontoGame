@@ -3,10 +3,12 @@
 // Provides repository instances using Prisma
 
 import type { IAnswerRepository } from '@/server/domain/repositories/IAnswerRepository';
+import type { IFavoriteRepository } from '@/server/domain/repositories/IFavoriteRepository';
 import type { IGameRepository } from '@/server/domain/repositories/IGameRepository';
 import type { IParticipationRepository } from '@/server/domain/repositories/IParticipationRepository';
 import { PrismaClient } from '../../../generated/prisma/client';
 import { PrismaAnswerRepository } from './PrismaAnswerRepository';
+import { PrismaFavoriteRepository } from './PrismaFavoriteRepository';
 import { PrismaGameRepository } from './PrismaGameRepository';
 import { PrismaParticipationRepository } from './PrismaParticipationRepository';
 
@@ -47,6 +49,14 @@ export function createAnswerRepository(): IAnswerRepository {
  */
 export function createParticipationRepository(): IParticipationRepository {
   return new PrismaParticipationRepository(getPrismaClient());
+}
+
+/**
+ * Creates favorite repository instance
+ * @returns IFavoriteRepository implementation using Prisma
+ */
+export function createFavoriteRepository(): IFavoriteRepository {
+  return new PrismaFavoriteRepository(getPrismaClient());
 }
 
 /**
