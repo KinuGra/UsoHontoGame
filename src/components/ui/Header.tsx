@@ -7,6 +7,7 @@
 
 'use client';
 
+import Link from 'next/link';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
 /**
@@ -19,6 +20,12 @@ export function Header() {
     <header className="border-b border-gray-200 bg-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
         <div className="text-lg font-semibold text-gray-900">ウソホントゲーム</div>
+        <Link href="/" className="flex items-center">
+          プレイヤービュー
+        </Link>
+        <Link href="/games" className="flex items-center">
+          モデレータービュー
+        </Link>
         <LanguageSwitcher />
       </div>
     </header>
